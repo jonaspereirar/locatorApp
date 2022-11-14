@@ -1,0 +1,22 @@
+{
+  "vehicles": [
+    {
+      "id": 1,
+      "name": "44-FE-06",
+      "avatar": "https://cdn.pixabay.com/photo/2017/06/12/14/49/car-2395797_960_720.png",
+      "address": "Sapataria"
+    },
+    {
+      "id": 2,
+      "name": "44-FE-09",
+      "avatar": "https://cdn.pixabay.com/photo/2017/06/12/14/49/car-2395797_960_720.png",
+      "address": "Santiago dos Velhos"
+    },
+    {
+      "id": 3,
+      "name": "44-FE-10",
+      "avatar": "https://cdn.pixabay.com/photo/2017/06/12/14/49/car-2395797_960_720.png",
+      "address": "Sapataria"
+    }
+  ]
+}

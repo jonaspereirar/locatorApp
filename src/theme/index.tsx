@@ -3,9 +3,12 @@ import { extendTheme } from "native-base";
 export const THEME = extendTheme({
   colors: {
     green: {
+      950: '#14b8a535',
+      800: '#001d1a',
       700: '#0f766e',
       600: '#0d9488',
       500: '#14b8a6',
+      400: '#1DE9B6'
     },
     gray: {
       700: '#121214',
@@ -18,7 +21,9 @@ export const THEME = extendTheme({
     },
     white: '#FFFFFF',
     red: {
-      500: '#F75A68'
+      600: '#be0716',
+      500: '#FE4849',
+      400: '#F75A68'
     },
     olive: {
       100: '#A1C181',
@@ -35,6 +40,10 @@ export const THEME = extendTheme({
     polishedPine: {
       100: '#619B8A'
     },
+    blue: {
+      300: '#007490',
+      500: '#0183f5',
+    }
   },
   fonts: {
     heading: 'Roboto_700Bold',
