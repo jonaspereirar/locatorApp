@@ -1,9 +1,8 @@
 import { useState, useEffect } from 'react'
 import { useNavigation } from '@react-navigation/native';
-import { Center, FlatList, useTheme, Avatar, Heading, Text, Pressable, IPressableProps } from 'native-base'
-import { StyleSheet, View, StatusBar } from 'react-native';
+import { FlatList, View } from 'native-base'
 
-import { AppNavigatorRoutesProps } from '@routes/app.routes';
+
 import { Header } from '@components/Header';
 import { VehiclesDTO } from '@dtos/vehiclesDTO';
 import { Load } from '../components/Load';
@@ -22,7 +21,6 @@ interface NavigationProps {
 
 export function VehicleList() {
   const [loading, setLoading] = useState(true)
-  const [refreshing, setRefreshing] = useState(false);
   const [vehicles, setVehicles] = useState<VehiclesDTO[]>([]);
   const [groupSelected, setGroupSelected] = useState('')
 

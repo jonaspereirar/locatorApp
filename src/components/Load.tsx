@@ -1,6 +1,6 @@
 import React from 'react';
 import { ActivityIndicator } from 'react-native';
-import { useTheme, Box } from 'native-base'
+import { useTheme } from 'native-base'
 
 export function Load() {
   const theme = useTheme();

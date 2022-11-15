@@ -1,13 +1,12 @@
 import { useNavigation, useRoute } from '@react-navigation/native';
 import MapView, { MapEvent, Marker } from 'react-native-maps';
-import { TouchableOpacity, Dimensions } from 'react-native'
-import { Box, Center, Heading, useTheme, HStack, Icon, Image, Text, View, VStack, Pressable, IPressableProps, FlatList } from 'native-base'
+import { TouchableOpacity } from 'react-native'
+import { Box, Heading, useTheme, HStack, Icon, Text, View, VStack, Pressable, FlatList } from 'native-base'
 import { Feather } from '@expo/vector-icons';
 
 import { AppNavigatorRoutesProps } from '@routes/app.routes';
 
 import { VehiclesDTO } from '@dtos/vehiclesDTO';
-import { VehicleList } from './VehicleList';
 import { useState, useCallback } from 'react';
 import { CardInfoVehicle } from '@components/CardInfoVehicle';
 import { CardInfoHome } from '@components/CardInfoHome';
@@ -21,11 +20,9 @@ export function VehicleDetails() {
   const [position, setPosition] = useState({ latitude: 0, longitude: 0 });
   const [groupSelected, setGroupSelected] = useState('')
   const navigation = useNavigation<AppNavigatorRoutesProps>()
-  const [viewable, setViewable] = useState([]);
   const [cards, setCards] = useState([1])
 
   const route = useRoute();
-  const { colors } = useTheme();
   const { vehicle } = route.params as Params;
 
   function handleSelectMapPosition(e: MapEvent) {
@@ -143,12 +140,12 @@ export function VehicleDetails() {
       </Box>
       <HStack>
         <VStack mb='4' flexDirection='column' ml='4'>
-          <ReportButton color='white' title="Viagens" mt={3} />
-          <ReportButton color='white' title="Eventos" mt={3} />
+          <ReportButton iconColor='green.400' color='white' title="Viagens" mt={3} />
+          <ReportButton iconColor='blue.500' color='white' title="Eventos" mt={3} />
         </VStack>
         <VStack mb='4' flexDirection='column' ml='4'>
-          <ReportButton color='white' title="Paragens" mt={3} />
-          <ReportButton color='white' title="..." mt={3} />
+          <ReportButton iconColor='sunglow.100' color='white' title="Paragens" mt={3} />
+          <ReportButton iconColor='green.400' color='white' title="Paragens" mt={3} />
         </VStack>
       </HStack>
 

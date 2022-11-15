@@ -1,6 +1,5 @@
 import { Dimensions } from 'react-native'
 import { HStack, VStack, Center, Text, Box, Heading, ITextProps } from 'native-base'
-import { VehiclesDTO } from '@dtos/vehiclesDTO'
 
 type Props = ITextProps & {
   name: string

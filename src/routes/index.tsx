@@ -22,7 +22,7 @@ export function Routes() {
         position="absolute"
       />
       <NavigationContainer theme={theme}>
-        <AuthRoutes />
+        <AppRoutes />
       </NavigationContainer>
     </Box>
   )

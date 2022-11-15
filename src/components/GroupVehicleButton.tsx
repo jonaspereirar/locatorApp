@@ -1,5 +1,4 @@
 import { Text, Pressable, IPressableProps, HStack, Avatar, Icon, VStack, useTheme, Heading } from "native-base";
-import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 
 import { FontAwesome } from '@expo/vector-icons';
 
@@ -17,7 +16,6 @@ type Props = IPressableProps & {
 export function GroupVehicleButton({
   status, rpm, speed, size, color, name, address, isActive, ...rest }: Props) {
   const { colors } = useTheme();
-  //const { speed } = props
   let iconColor = '';
   if (speed > 0) {
     iconColor = colors.green[600]
