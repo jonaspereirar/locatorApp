@@ -9,7 +9,7 @@ export function Load() {
     <ActivityIndicator
       color={theme.colors.green[400]}
       size='large'
-      style={{ marginTop: 128, justifyContent: 'center', alignItems: 'center' }}
+      style={{ backgroundColor: 'transparent', marginTop: 128, justifyContent: 'center', alignItems: 'center' }}
     />
   )
 

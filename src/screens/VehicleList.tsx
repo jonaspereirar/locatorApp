@@ -46,7 +46,7 @@ export function VehicleList() {
   }, [])
 
   return (
-    <View>
+    <View backgroundColor='transparent'>
       <Header />
       {loading ? <Load /> :
         <FlatList

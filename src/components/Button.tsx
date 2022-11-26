@@ -1,8 +1,7 @@
-import { Button as ButtonNative, IButtonProps, Text } from "native-base"
+import { Box, Button as ButtonNative, IButtonProps, Text } from "native-base"
 
 type Props = IButtonProps & {
   title: string;
-
 }
 
 export function Button({ title, ...rest }: Props) {
@@ -16,7 +15,6 @@ export function Button({ title, ...rest }: Props) {
         bg: 'green.500'
       }}
       {...rest}
-
     >
       <Text
         color='white'

@@ -1,4 +1,4 @@
-import { Platform } from 'react-native';
+import React from "react";
 import { createBottomTabNavigator, BottomTabNavigationProp } from "@react-navigation/bottom-tabs";
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { Hidden, useTheme } from "native-base";

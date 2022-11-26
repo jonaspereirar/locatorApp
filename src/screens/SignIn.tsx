@@ -1,26 +1,58 @@
-import { useNavigation } from "@react-navigation/native";
+import React, { useContext, useState } from "react";
 import { VStack, Image, Text, Center, Heading, ScrollView } from "native-base";
-
-import { AuthNavigatorRoutesProps } from "@routes/auth.routes";
+import { useForm, Controller } from "react-hook-form";
+import { yupResolver } from '@hookform/resolvers/yup';
+import * as yup from 'yup'
 
 import LogoSvg from '@assets/logo3.svg'
 import Background from '@assets/background.png'
-import { Input } from "@components/Imput";
+import { Input } from "@components/Input";
 import { Button } from "@components/Button";
+import { useAuth } from "../context/AuthContext";
+import { Alert } from "react-native";
+
+
+
+type FormDataProps = {
+  email: string;
+  password: string
+}
+
+const signInSchema = yup.object({
+  email: yup.string()
+    .required('Informe seu email.')
+    .email('E-mail inválido.'),
+  password: yup.string()
+    .required('Informe sua senha.')
+})
 
 export function SignIn() {
+  const { control, handleSubmit, formState: { errors } } = useForm<FormDataProps>({
+    resolver: yupResolver(signInSchema)
+  });
 
-  const navigation = useNavigation<AuthNavigatorRoutesProps>();
+  const { signIn, loading } = useAuth()
 
-  function handleNewAccont() {
-    navigation.navigate('signIn');
+  async function handleSignIn(form: FormDataProps) {
+    const data = {
+      email: form.email,
+      password: form.password,
+    }
+    try {
+      signIn(data);
+    } catch (eeror) {
+      Alert.alert(
+        'Erro na autenticacao',
+        'Ocorreu erro ao fazer login, verifique suas credenciais'
+      )
+    }
   }
-
 
   return (
     <ScrollView
       contentContainerStyle={{ flexGrow: 1 }}
       showsVerticalScrollIndicator={false}
+      backgroundColor='transparent'
     >
       <VStack flex={1} px={10}>
 
@@ -38,7 +70,6 @@ export function SignIn() {
           <Text color="white" fontSize='sm' ml={-16} mt={-8}>
             Locator
           </Text>
-
         </Center>
 
         <Center>
@@ -46,17 +77,43 @@ export function SignIn() {
             Acesse sua conta
           </Heading>
 
-          <Input
-            placeholder="E-mail"
-            keyboardType="email-address"
-            autoCapitalize="none"
-          />
-          <Input
-            placeholder="Senha"
-            secureTextEntry
+          <Controller
+            control={control}
+            name="email"
+            render={({ field: { onChange, value } }) => (
+              <Input
+                keyboardType="email-address"
+                autoCapitalize="none"
+                placeholder="E-mail"
+                onChangeText={onChange}
+                value={value}
+                errorMessage={errors.email?.message}
+              />
+            )}
           />
 
-          <Button title="Acessar"></Button>
+          <Controller
+            control={control}
+            name="password"
+            render={({ field: { onChange, value } }) => (
+              <Input
+                placeholder="Senha"
+                secureTextEntry
+                onChangeText={onChange}
+                value={value}
+                onSubmitEditing={handleSubmit(handleSignIn)}
+                returnKeyType="send"
+                errorMessage={errors.password?.message}
+              />
+            )}
+          />
+
+          <Button
+            disabled={loading}
+            onPress={handleSubmit(handleSignIn)}
+            title="Acessar"
+          />
+
         </Center>
 
       </VStack>

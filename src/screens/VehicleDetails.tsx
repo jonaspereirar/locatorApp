@@ -35,7 +35,7 @@ export function VehicleDetails() {
 
   return (
 
-    <VStack flex={1} px={2} my={10} >
+    <VStack flex={1} px={2} mt={12} my={1} backgroundColor='transparent' >
 
       <Pressable
         backgroundColor='blue.300'
@@ -45,7 +45,7 @@ export function VehicleDetails() {
         }}
       >
         <HStack rounded='md' justifyContent='space-around' mb={3} mt={5}>
-          <View flex={1} flexDirection='column' mt={1} mb={1} ml={3} mr={5} size={48}>
+          <View flex={1} flexDirection='column' mt={2} mb={1} ml={3} mr={5} size={48}>
             <MapView
               ref={(ref) => {
 

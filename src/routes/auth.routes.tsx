@@ -1,3 +1,4 @@
+import React from "react";
 import {
   createNativeStackNavigator,
   NativeStackNavigationProp
@@ -16,10 +17,7 @@ const { Navigator, Screen } = createNativeStackNavigator<AuthRoutes>();
 export function AuthRoutes() {
   return (
     <Navigator screenOptions={{ headerShown: false }}>
-      <Screen
-        name='signIn'
-        component={SignIn}
-      />
+      <Screen name='signIn' component={SignIn} />
     </Navigator>
   )
 }
