@@ -5,13 +5,13 @@ import { Load } from '@components/Load';
 import { AuthRoutes } from "./auth.routes";
 import { AppRoutes } from './app.routes';
 
-import { AuthProvider, useAuth } from '../context/AuthContext';
+import { useAuth } from '@contexts/auth';
 
 import Background from '@assets/background.png'
 
 export default function Routes() {
   const { colors } = useTheme();
-  const { loading, signIn } = useAuth();
+  const { loading, user } = useAuth();
 
   const theme = DefaultTheme;
   theme.colors.background = colors.green[800]
@@ -24,7 +24,7 @@ export default function Routes() {
     );
   }
   return (
-    <Box flex={1}>
+    <Box flex={1} background={colors.green[800]}>
       <Image
         source={Background}
         defaultSource={Background}
@@ -33,9 +33,9 @@ export default function Routes() {
         position="absolute"
       />
       <NavigationContainer theme={theme}>
-        <AuthProvider>
-          {signIn ? <AppRoutes /> : <AuthRoutes />}
-        </AuthProvider>
+
+        {user?.id ? <AppRoutes /> : <AuthRoutes />}
+
       </NavigationContainer>
     </Box>
   )

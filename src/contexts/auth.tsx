@@ -2,11 +2,20 @@ import { Alert } from 'react-native';
 import React, { FunctionComponent, useContext, useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-import { AuthContext, IProps, IAuthContext, ICrendentials, IUser, IAuthState } from '../types';
+import { ReactElement, createContext } from 'react';
+import { IAuthContext, ICrendentials, IUser, IAuthState } from '../types';
 import { api } from '@services/api';
 
 const tokenData = '@tlbtProfile:token';
 const userData = '@tlbtProfile:user'
+
+interface IProps {
+  children: ReactElement;
+}
+
+const AuthContext = createContext<IAuthContext>(
+  {} as IAuthContext,
+);
 
 export const AuthProvider: FunctionComponent<IProps> = ({ children }) => {
   const [data, setData] = useState<IAuthState>({} as IAuthState)
@@ -31,6 +40,7 @@ export const AuthProvider: FunctionComponent<IProps> = ({ children }) => {
         email,
         password,
       });
+      console.log(response.data)
       const { token, user } = response.data
       await AsyncStorage.setItem(tokenData, token)
       await AsyncStorage.setItem(userData, JSON.stringify(user))
@@ -44,8 +54,15 @@ export const AuthProvider: FunctionComponent<IProps> = ({ children }) => {
     setLoading(false);
   }
 
+  async function signOut() {
+    await AsyncStorage.removeItem(tokenData);
+    await AsyncStorage.removeItem(userData);
+
+    setData({} as IAuthState);
+  }
+
   return (
-    <AuthContext.Provider value={{ user: data.user, loading, signIn }}>
+    <AuthContext.Provider value={{ user: data.user, loading, signIn, signOut }}>
       {children}
     </AuthContext.Provider>
   )

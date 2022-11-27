@@ -16,14 +16,14 @@ type AppRoutes = {
 
 export type AppNavigatorRoutesProps = BottomTabNavigationProp<AppRoutes>
 
-const { Navigator, Screen } = createBottomTabNavigator<AppRoutes>();
+const App = createBottomTabNavigator<AppRoutes>();
 
 export function AppRoutes() {
   const { sizes, colors } = useTheme();
 
   const iconSize = sizes[8];
   return (
-    <Navigator screenOptions={{
+    <App.Navigator screenOptions={{
       headerShown: false,
       tabBarShowLabel: false,
       tabBarActiveTintColor: colors.green[500],
@@ -37,7 +37,7 @@ export function AppRoutes() {
 
       }
     }}>
-      <Screen
+      <App.Screen
         name="Veículos"
         component={VehicleList}
         options={{
@@ -51,7 +51,7 @@ export function AppRoutes() {
         }}
       />
 
-      <Screen
+      <App.Screen
         name="Mapa"
         component={Map}
         options={{
@@ -65,7 +65,7 @@ export function AppRoutes() {
         }}
       />
 
-      <Screen
+      <App.Screen
         name="Mais"
         component={More}
         options={{
@@ -79,11 +79,11 @@ export function AppRoutes() {
         }}
       />
 
-      <Screen
+      <App.Screen
         name="VehicleDetails"
         component={VehicleDetails}
         options={{ tabBarButton: () => null, tabBarStyle: { display: 'none' } }}
       />
-    </Navigator>
+    </App.Navigator>
   )
 }

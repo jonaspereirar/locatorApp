@@ -1,14 +1,16 @@
 import { useState, useEffect } from 'react'
 import { useNavigation } from '@react-navigation/native';
-import { FlatList, View } from 'native-base'
+import { FlatList, Icon, View } from 'native-base'
+import { Feather } from '@expo/vector-icons';
 
-
+import { useAuth } from '@contexts/auth'
 import { Header } from '@components/Header';
 import { VehiclesDTO } from '@dtos/vehiclesDTO';
 import { Load } from '../components/Load';
 import { api } from '../services/api'
 
 import { GroupVehicleButton } from '@components/GroupVehicleButton';
+import { TouchableOpacity } from 'react-native';
 
 interface NavigationProps {
   navigate: (
@@ -25,6 +27,7 @@ export function VehicleList() {
   const [groupSelected, setGroupSelected] = useState('')
 
   const navigation = useNavigation<NavigationProps>();
+  const { signOut } = useAuth()
 
   function handleVehicleDetails(vehicle: VehiclesDTO) {
     navigation.navigate('VehicleDetails', { vehicle })
@@ -81,6 +84,9 @@ export function VehicleList() {
           mb={10}
         />
       }
+      <TouchableOpacity onPress={signOut}>
+        <Icon as={Feather} name='arrow-left' color='green.400' size={6} />
+      </TouchableOpacity>
     </View>
   )
 }

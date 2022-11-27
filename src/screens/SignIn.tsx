@@ -8,7 +8,7 @@ import LogoSvg from '@assets/logo3.svg'
 import Background from '@assets/background.png'
 import { Input } from "@components/Input";
 import { Button } from "@components/Button";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "@contexts/auth";
 import { Alert } from "react-native";
 
 
