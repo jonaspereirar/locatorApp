@@ -4,7 +4,7 @@ import { NativeBaseProvider } from 'native-base'
 import { useFonts, Roboto_400Regular, Roboto_700Bold } from '@expo-google-fonts/roboto';
 
 import Routes from './src/routes';
-import { AuthProvider } from "@contexts/auth";
+import AuthProvider from "@contexts/auth";
 
 import { THEME } from './src/theme'
 import { Load } from '@components/Load';

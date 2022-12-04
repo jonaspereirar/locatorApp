@@ -1,5 +1,6 @@
 import React from "react";
 import { createBottomTabNavigator, BottomTabNavigationProp } from "@react-navigation/bottom-tabs";
+import { Platform, StatusBar } from 'react-native';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { Hidden, useTheme } from "native-base";
 import { VehicleList } from "@screens/VehicleList";
@@ -23,20 +24,20 @@ export function AppRoutes() {
 
   const iconSize = sizes[8];
   return (
-    <App.Navigator screenOptions={{
-      headerShown: false,
-      tabBarShowLabel: false,
-      tabBarActiveTintColor: colors.green[500],
-      tabBarInactiveTintColor: colors.gray[200],
-      tabBarStyle: {
-        // height: Platform.OS === 'android' ? 'auto' : 96,
-        // paddingBottom: sizes[10],
-        // paddingTop: sizes[6],
-        backgroundColor: colors.green[800],
-        borderTopWidth: 0,
-
-      }
-    }}>
+    <App.Navigator
+      screenOptions={{
+        headerShown: false,
+        tabBarShowLabel: false,
+        tabBarActiveTintColor: colors.green[500],
+        tabBarInactiveTintColor: colors.gray[200],
+        tabBarStyle: {
+          height: Platform.OS === 'android' ? 'auto' : 96,
+          paddingBottom: sizes[10],
+          paddingTop: sizes[6],
+          backgroundColor: colors.green[800],
+          borderTopWidth: 0,
+        }
+      }}>
       <App.Screen
         name="Veículos"
         component={VehicleList}

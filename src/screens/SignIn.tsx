@@ -1,5 +1,6 @@
 import React, { useContext, useState } from "react";
-import { VStack, Image, Text, Center, Heading, ScrollView } from "native-base";
+import { Alert, Platform } from "react-native";
+import { VStack, Image, Text, Center, Heading, ScrollView, KeyboardAvoidingView } from "native-base";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup'
@@ -9,7 +10,6 @@ import Background from '@assets/background.png'
 import { Input } from "@components/Input";
 import { Button } from "@components/Button";
 import { useAuth } from "@contexts/auth";
-import { Alert } from "react-native";
 
 
 
@@ -49,74 +49,78 @@ export function SignIn() {
   }
 
   return (
-    <ScrollView
-      contentContainerStyle={{ flexGrow: 1 }}
-      showsVerticalScrollIndicator={false}
-      backgroundColor='transparent'
+    <KeyboardAvoidingView
+      behavior={Platform.OS === 'ios' ? 'padding' : null}
     >
-      <VStack flex={1} px={10}>
+      <ScrollView
+        contentContainerStyle={{ flexGrow: 1 }}
+        showsVerticalScrollIndicator={false}
+        backgroundColor='transparent'
+      >
+        <VStack flex={1} px={10}>
 
-        <Image
-          source={Background}
-          defaultSource={Background}
-          alt="TLBT"
-          resizeMode="contain"
-          position="absolute"
-        />
-
-        <Center my={24}>
-          <LogoSvg width={120} />
-
-          <Text color="white" fontSize='sm' ml={-16} mt={-8}>
-            Locator
-          </Text>
-        </Center>
-
-        <Center>
-          <Heading color='gray.200' fontSize='xl' mb={6} fontFamily='heading'>
-            Acesse sua conta
-          </Heading>
-
-          <Controller
-            control={control}
-            name="email"
-            render={({ field: { onChange, value } }) => (
-              <Input
-                keyboardType="email-address"
-                autoCapitalize="none"
-                placeholder="E-mail"
-                onChangeText={onChange}
-                value={value}
-                errorMessage={errors.email?.message}
-              />
-            )}
+          <Image
+            source={Background}
+            defaultSource={Background}
+            alt="TLBT"
+            resizeMode="contain"
+            position="absolute"
           />
 
-          <Controller
-            control={control}
-            name="password"
-            render={({ field: { onChange, value } }) => (
-              <Input
-                placeholder="Senha"
-                secureTextEntry
-                onChangeText={onChange}
-                value={value}
-                onSubmitEditing={handleSubmit(handleSignIn)}
-                returnKeyType="send"
-                errorMessage={errors.password?.message}
-              />
-            )}
-          />
+          <Center my={24}>
+            <LogoSvg width={120} />
 
-          <Button
-            disabled={loading}
-            onPress={handleSubmit(handleSignIn)}
-            title="Acessar"
-          />
+            <Text color="white" fontSize='sm' ml={-16} mt={-8}>
+              Locator
+            </Text>
+          </Center>
 
-        </Center>
+          <Center>
+            <Heading color='gray.200' fontSize='xl' mb={6} fontFamily='heading'>
+              Acesse sua conta
+            </Heading>
 
-      </VStack>
-    </ScrollView>
+            <Controller
+              control={control}
+              name="email"
+              render={({ field: { onChange, value } }) => (
+                <Input
+                  keyboardType="email-address"
+                  autoCapitalize="none"
+                  placeholder="E-mail"
+                  onChangeText={onChange}
+                  value={value}
+                  errorMessage={errors.email?.message}
+                />
+              )}
+            />
+
+            <Controller
+              control={control}
+              name="password"
+              render={({ field: { onChange, value } }) => (
+                <Input
+                  placeholder="Senha"
+                  secureTextEntry
+                  onChangeText={onChange}
+                  value={value}
+                  onSubmitEditing={handleSubmit(handleSignIn)}
+                  returnKeyType="send"
+                  errorMessage={errors.password?.message}
+                />
+              )}
+            />
+
+            <Button
+              disabled={loading}
+              onPress={handleSubmit(handleSignIn)}
+              title="Acessar"
+            />
+
+          </Center>
+
+        </VStack>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 }
