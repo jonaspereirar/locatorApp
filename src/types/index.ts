@@ -1,23 +1,22 @@
-export interface ICrendentials {
-  email: string;
-  password: string
-}
-
-export interface IAuthContext {
-  loading: boolean;
-  user: IUser;
-  signIn(credentials: ICrendentials): void;
-  signOut(): void;
-}
-
-export interface IUser {
+export type UserDTO = {
   id: string;
   name: string;
   email: string;
-  password: string
+}
+
+export interface ISignInCredencials {
+  email: string;
+  password: string;
 }
 
 export interface IAuthState {
+  user: UserDTO;
   token: string;
-  user: IUser;
+}
+
+export type AuthContextDataProps = {
+  user: UserDTO;
+  singIn: (email: string, password: string) => Promise<void>;
+  signOut: () => Promise<void>;
+  isLoadingUserStorageData: boolean;
 }

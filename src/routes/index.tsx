@@ -1,28 +1,25 @@
 import { useTheme, Box, Image, View } from 'native-base'
 import { DefaultTheme, NavigationContainer } from "@react-navigation/native";
 
-import { Load } from '@components/Load';
+import { Loading } from '@components/Loading';
 import { AuthRoutes } from "./auth.routes";
 import { AppRoutes } from './app.routes';
-
-import { useAuth } from '@contexts/auth';
+import { useAuth } from '@hooks/useAuth';
 
 import Background from '@assets/background.png'
 
 export default function Routes() {
+  const { user, isLoadingUserStorageData } = useAuth();
   const { colors } = useTheme();
-  const { loading, user } = useAuth();
+
 
   const theme = DefaultTheme;
   theme.colors.background = colors.green[800]
 
-  if (loading) {
-    return (
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <Load />
-      </View>
-    );
+  if (isLoadingUserStorageData) {
+    return <Loading />
   }
+
   return (
     <Box flex={1} background={colors.green[800]}>
       <Image
@@ -34,7 +31,7 @@ export default function Routes() {
       />
       <NavigationContainer theme={theme}>
 
-        {user?.id ? <AppRoutes /> : <AuthRoutes />}
+        {user.id ? <AppRoutes /> : <AuthRoutes />}
 
       </NavigationContainer>
     </Box>

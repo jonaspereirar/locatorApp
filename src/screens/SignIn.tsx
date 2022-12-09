@@ -1,126 +1,112 @@
-import React, { useContext, useState } from "react";
-import { Alert, Platform } from "react-native";
-import { VStack, Image, Text, Center, Heading, ScrollView, KeyboardAvoidingView } from "native-base";
-import { useForm, Controller } from "react-hook-form";
-import { yupResolver } from '@hookform/resolvers/yup';
-import * as yup from 'yup'
+import { Controller, useForm } from 'react-hook-form';
+import { VStack, Image, Text, Center, Heading, ScrollView, useToast } from "native-base";
+
+import { useAuth } from '@hooks/useAuth';
 
 import LogoSvg from '@assets/logo3.svg'
 import Background from '@assets/background.png'
+
+import { AppError } from '@utils/AppError';
+
 import { Input } from "@components/Input";
 import { Button } from "@components/Button";
-import { useAuth } from "@contexts/auth";
+import { useState } from 'react';
 
-
-
-type FormDataProps = {
+type FormData = {
   email: string;
-  password: string
+  password: string;
 }
 
-const signInSchema = yup.object({
-  email: yup.string()
-    .required('Informe seu email.')
-    .email('E-mail inválido.'),
-  password: yup.string()
-    .required('Informe sua senha.')
-})
-
 export function SignIn() {
-  const { control, handleSubmit, formState: { errors } } = useForm<FormDataProps>({
-    resolver: yupResolver(signInSchema)
-  });
+  const [isLoading, setIsLoading] = useState(false)
 
-  const { signIn, loading } = useAuth()
+  const { singIn } = useAuth();
+  const toas = useToast();
 
-  async function handleSignIn(form: FormDataProps) {
-    const data = {
-      email: form.email,
-      password: form.password,
-    }
+  const { control, handleSubmit, formState: { errors } } = useForm<FormData>()
+
+  async function handleSignIn({ email, password }: FormData) {
     try {
-      signIn(data);
-    } catch (eeror) {
-      Alert.alert(
-        'Erro na autenticacao',
-        'Ocorreu erro ao fazer login, verifique suas credenciais'
-      )
+      setIsLoading(true);
+      await singIn(email, password);
+
+    } catch (error) {
+      const isAppError = error instanceof AppError;
+
+      const title = isAppError ? error.message : 'Não foi possível entrar. Tente novamente.'
+
+      toas.show({
+        title,
+        placement: 'top',
+        bgColor: 'red.500'
+      })
+      setIsLoading(false);
     }
   }
 
   return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS === 'ios' ? 'padding' : null}
+    <ScrollView
+      contentContainerStyle={{ flexGrow: 1 }}
+      showsVerticalScrollIndicator={false}
+      backgroundColor='transparent'
     >
-      <ScrollView
-        contentContainerStyle={{ flexGrow: 1 }}
-        showsVerticalScrollIndicator={false}
-        backgroundColor='transparent'
-      >
-        <VStack flex={1} px={10}>
+      <VStack flex={1} px={10} pb={16}>
+        <Image
+          source={Background}
+          defaultSource={Background}
+          alt="TLBT"
+          resizeMode="contain"
+          position="absolute"
+        />
 
-          <Image
-            source={Background}
-            defaultSource={Background}
-            alt="TLBT"
-            resizeMode="contain"
-            position="absolute"
+        <Center my={24}>
+          <LogoSvg width={120} />
+          <Text color="white" fontSize='sm' ml={-16} mt={-8}>
+            Locator
+          </Text>
+        </Center>
+
+        <Center>
+          <Heading color="gray.100" fontSize="xl" mb={6} fontFamily="heading">
+            Acesse a conta
+          </Heading>
+
+          <Controller
+            control={control}
+            name="email"
+            rules={{ required: 'Informe o e-mail' }}
+            render={({ field: { onChange } }) => (
+              <Input
+                placeholder="E-mail"
+                keyboardType="email-address"
+                autoCapitalize="none"
+                onChangeText={onChange}
+                errorMessage={errors.email?.message}
+              />
+            )}
           />
 
-          <Center my={24}>
-            <LogoSvg width={120} />
+          <Controller
+            control={control}
+            name="password"
+            rules={{ required: 'Informe a senha' }}
+            render={({ field: { onChange } }) => (
+              <Input
+                placeholder="Senha"
+                secureTextEntry
+                onChangeText={onChange}
+                errorMessage={errors.password?.message}
+              />
+            )}
+          />
 
-            <Text color="white" fontSize='sm' ml={-16} mt={-8}>
-              Locator
-            </Text>
-          </Center>
-
-          <Center>
-            <Heading color='gray.200' fontSize='xl' mb={6} fontFamily='heading'>
-              Acesse sua conta
-            </Heading>
-
-            <Controller
-              control={control}
-              name="email"
-              render={({ field: { onChange, value } }) => (
-                <Input
-                  keyboardType="email-address"
-                  autoCapitalize="none"
-                  placeholder="E-mail"
-                  onChangeText={onChange}
-                  value={value}
-                  errorMessage={errors.email?.message}
-                />
-              )}
-            />
-
-            <Controller
-              control={control}
-              name="password"
-              render={({ field: { onChange, value } }) => (
-                <Input
-                  placeholder="Senha"
-                  secureTextEntry
-                  onChangeText={onChange}
-                  value={value}
-                  onSubmitEditing={handleSubmit(handleSignIn)}
-                  returnKeyType="send"
-                  errorMessage={errors.password?.message}
-                />
-              )}
-            />
-
-            <Button
-              disabled={loading}
-              onPress={handleSubmit(handleSignIn)}
-              title="Acessar"
-            />
-
-          </Center>
-
-        </VStack>
-      </ScrollView>
-    </KeyboardAvoidingView>
+          <Button
+            title="Acessar"
+            onPress={handleSubmit(handleSignIn)}
+            isLoading={isLoading}
+          />
+        </Center>
+      </VStack>
+    </ScrollView>
   );
 }
