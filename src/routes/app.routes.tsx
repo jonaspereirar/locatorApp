@@ -1,11 +1,10 @@
 import React from "react";
 import { createBottomTabNavigator, BottomTabNavigationProp } from "@react-navigation/bottom-tabs";
-import { Platform, StatusBar } from 'react-native';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
-import { Hidden, useTheme } from "native-base";
-import { VehicleList } from "@screens/VehicleList";
-import { Map } from "@screens/Map";
-import { More } from "@screens/More";
+import { useTheme } from "native-base";
+import { VehicleList } from "@screens/TabBottom/VehicleList";
+import { Map } from "@screens/TabBottom/Map";
+import { More } from "@screens/TabBottom/More";
 import { VehicleDetails } from '@screens/VehicleDetails';
 
 type AppRoutes = {
@@ -31,9 +30,9 @@ export function AppRoutes() {
         tabBarActiveTintColor: colors.green[500],
         tabBarInactiveTintColor: colors.gray[200],
         tabBarStyle: {
-          height: Platform.OS === 'android' ? 'auto' : 96,
-          paddingBottom: sizes[10],
-          paddingTop: sizes[6],
+          // height: Platform.OS === 'android' ? 'auto' : 96,
+          // paddingBottom: sizes[10],
+          // paddingTop: sizes[6],
           backgroundColor: colors.green[800],
           borderTopWidth: 0,
         }
@@ -43,7 +42,7 @@ export function AppRoutes() {
         component={VehicleList}
         options={{
           tabBarLabel: 'Veículos',
-          tabBarIcon: ({ color, size }) => (
+          tabBarIcon: ({ color }) => (
             <MaterialCommunityIcons
               name="car-multiple"
               size={iconSize}
@@ -57,7 +56,7 @@ export function AppRoutes() {
         component={Map}
         options={{
           tabBarLabel: 'Mapa',
-          tabBarIcon: ({ color, size }) => (
+          tabBarIcon: ({ color }) => (
             <Ionicons
               name="ios-map"
               size={iconSize}
@@ -71,7 +70,7 @@ export function AppRoutes() {
         component={More}
         options={{
           tabBarLabel: 'Mais',
-          tabBarIcon: ({ color, size }) => (
+          tabBarIcon: ({ color }) => (
             <Ionicons
               name="ios-ellipsis-horizontal"
               size={iconSize}

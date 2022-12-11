@@ -5,9 +5,10 @@ import LogoSvg from '@assets/logo3.svg'
 export function Header() {
   return (
     <HStack
-      mt={1}
-      w={"full"}
-      h={24}
+      mt='4'
+      mb='4'
+      w='full'
+      h='24'
       backgroundColor='transparent'
       overflow='hidden'
     >

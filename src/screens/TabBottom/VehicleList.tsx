@@ -1,14 +1,11 @@
-import { TouchableOpacity } from 'react-native';
 import { useState, useEffect } from 'react'
 import { useNavigation } from '@react-navigation/native';
-import { FlatList, View, Icon } from 'native-base'
-import { Feather } from '@expo/vector-icons';
-
+import { FlatList, View } from 'native-base'
 
 import { Header } from '@components/Header';
 import { VehiclesDTO } from '@dtos/vehiclesDTO';
-import { Loading } from '../components/Loading';
-import { api } from '../services/api'
+import { Loading } from '../../components/Loading';
+import { api } from '../../services/api'
 import { useAuth } from '@hooks/useAuth';
 
 import { GroupVehicleButton } from '@components/GroupVehicleButton';
@@ -27,7 +24,7 @@ export function VehicleList() {
   const [vehicles, setVehicles] = useState<VehiclesDTO[]>([]);
   const [groupSelected, setGroupSelected] = useState('')
 
-  const { signOut } = useAuth();
+  const { user } = useAuth();
 
   const navigation = useNavigation<NavigationProps>();
 
@@ -38,7 +35,7 @@ export function VehicleList() {
   useEffect(() => {
     async function loadListVehicles() {
       try {
-        const response = await api.get('/vehicles');
+        const response = await api.get(`/api/devices?userId=${user.id}`);
         setVehicles(response.data);
       } catch (error) {
         console.log(error)
@@ -46,7 +43,6 @@ export function VehicleList() {
         setLoading(false)
       }
     }
-
     loadListVehicles();
   }, [])
 
@@ -77,9 +73,6 @@ export function VehicleList() {
           showsVerticalScrollIndicator={false}
           _contentContainerStyle={{
             px: 4,
-            //paddingBottom: 10,
-            //paddingTop: StatusBar.currentHeight || 0,
-            // mb: 20,
             pb: 20,
             backgroundColor: 'transparent',
           }}
@@ -87,9 +80,6 @@ export function VehicleList() {
         />
 
       }
-      <TouchableOpacity onPress={signOut}>
-        <Icon as={Feather} name='arrow-left' color='green.400' size={6} />
-      </TouchableOpacity>
     </View>
   )
 }

@@ -133,17 +133,17 @@ export function VehicleDetails() {
         showsHorizontalScrollIndicator={false}
         _contentContainerStyle={{ px: 1 }}
       />
-      <Box mt={1} ml='3'>
+      <Box mt={1} ml='4'>
         <Heading color='gray.100' fontSize='lg'>
           Relatorios
         </Heading>
       </Box>
-      <HStack>
-        <VStack mb='4' flexDirection='column' ml='4'>
+      <HStack ml='auto' mr='auto'>
+        <VStack mb='4' flexDirection='column' ml='4' mr='4'>
           <ReportButton iconColor='green.400' color='white' title="Viagens" mt={3} />
           <ReportButton iconColor='blue.500' color='white' title="Eventos" mt={3} />
         </VStack>
-        <VStack mb='4' flexDirection='column' ml='4'>
+        <VStack mb='4' flexDirection='column' ml='4' mr='4'>
           <ReportButton iconColor='sunglow.100' color='white' title="Paragens" mt={3} />
           <ReportButton iconColor='green.400' color='white' title="Paragens" mt={3} />
         </VStack>
