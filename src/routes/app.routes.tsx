@@ -6,7 +6,7 @@ import { VehicleList } from "@screens/TabBottom/VehicleList";
 import { Map, MapProps } from "@screens/TabBottom/Map";
 import { More } from "@screens/TabBottom/More";
 import { VehicleDetails } from '@screens/VehicleDetails';
-import { VehicleDetailsTrips } from '@screens/VehicleDetailsTrips';
+// import { VehicleDetailsTrips } from '@screens/VehicleDetailsTrips';
 
 type AppRoutes = {
   Veículos: undefined;
@@ -87,11 +87,11 @@ export function AppRoutes() {
         options={{ tabBarButton: () => null, tabBarStyle: { display: 'none' } }}
       />
 
-      <App.Screen
+      {/* <App.Screen
         name="VehicleDetailsTrips"
         component={VehicleDetailsTrips}
         options={{ tabBarButton: () => null, tabBarStyle: { display: 'none' } }}
-      />
+      /> */}
     </App.Navigator>
   )
 }
