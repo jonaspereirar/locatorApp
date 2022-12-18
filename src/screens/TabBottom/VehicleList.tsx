@@ -3,7 +3,7 @@ import { useNavigation } from '@react-navigation/native';
 import { FlatList, View } from 'native-base'
 
 import { Header } from '@components/Header';
-import { VehiclesDTO } from '@dtos/vehiclesDTO';
+import { VehiclesDTO } from '../../dtos';
 import { Loading } from '../../components/Loading';
 import { api } from '../../services/api'
 import { useAuth } from '@hooks/useAuth';

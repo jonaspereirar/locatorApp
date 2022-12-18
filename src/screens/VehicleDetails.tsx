@@ -12,8 +12,19 @@ import { CardInfoVehicle } from '@components/CardInfoVehicle';
 import { CardInfoHome } from '@components/CardInfoHome';
 import { ReportButton } from '../components/ReportButton'
 
+//import VehicleDetailsTrips from './VehicleDetailsTrips';
+
 interface Params {
   vehicle: VehiclesDTO;
+}
+
+interface NavigationProps {
+  navigate: (
+    screen: string,
+    param: {
+      vehicle: VehiclesDTO
+    }
+  ) => void
 }
 
 export function VehicleDetails() {
@@ -27,6 +38,10 @@ export function VehicleDetails() {
 
   function handleSelectMapPosition(e: MapEvent) {
     setPosition(e.nativeEvent.coordinate);
+  }
+
+  function handleVehicleDetailsTrips() {
+    navigation.navigate('VehicleDetailsTrips')
   }
 
   function handleGoBack() {
@@ -140,7 +155,7 @@ export function VehicleDetails() {
       </Box>
       <HStack ml='auto' mr='auto'>
         <VStack mb='4' flexDirection='column' ml='4' mr='4'>
-          <ReportButton iconColor='green.400' color='white' title="Viagens" mt={3} />
+          <ReportButton onPress={handleVehicleDetailsTrips} iconColor='green.400' color='white' title="Viagens" mt={3} />
           <ReportButton iconColor='blue.500' color='white' title="Eventos" mt={3} />
         </VStack>
         <VStack mb='4' flexDirection='column' ml='4' mr='4'>

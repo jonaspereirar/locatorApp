@@ -3,15 +3,17 @@ import { createBottomTabNavigator, BottomTabNavigationProp } from "@react-naviga
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTheme } from "native-base";
 import { VehicleList } from "@screens/TabBottom/VehicleList";
-import { Map } from "@screens/TabBottom/Map";
+import { Map, MapProps } from "@screens/TabBottom/Map";
 import { More } from "@screens/TabBottom/More";
 import { VehicleDetails } from '@screens/VehicleDetails';
+import { VehicleDetailsTrips } from '@screens/VehicleDetailsTrips';
 
 type AppRoutes = {
   Veículos: undefined;
-  Mapa: undefined;
+  Mapa: MapProps | undefined;
   Mais: undefined;
   VehicleDetails: undefined;
+  VehicleDetailsTrips: undefined;
 }
 
 export type AppNavigatorRoutesProps = BottomTabNavigationProp<AppRoutes>
@@ -82,6 +84,12 @@ export function AppRoutes() {
       <App.Screen
         name="VehicleDetails"
         component={VehicleDetails}
+        options={{ tabBarButton: () => null, tabBarStyle: { display: 'none' } }}
+      />
+
+      <App.Screen
+        name="VehicleDetailsTrips"
+        component={VehicleDetailsTrips}
         options={{ tabBarButton: () => null, tabBarStyle: { display: 'none' } }}
       />
     </App.Navigator>

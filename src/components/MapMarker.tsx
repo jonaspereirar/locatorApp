@@ -1,56 +1,48 @@
-import React, { useState } from 'react';
 import { View, Text } from 'react-native';
 import { useTheme } from 'native-base'
 import { Ionicons } from '@expo/vector-icons';
 import { Marker } from 'react-native-maps';
+import { useEffect, useState } from 'react';
 
-export interface ICoordinate {
+interface Position {
   latitude: number;
   longitude: number;
+  speed: number;
+  rpm: number;
+  course: number;
 }
-export interface IDevice {
+
+interface Device {
   name: string;
 }
 
-export interface IMapState {
-  position: {
-    latitude: number;
-    longitude: number;
-    speed: number;
-    course: number
-    rpm: number;
-  }
-  device: {
-    name: string;
-  }
-
-  reposition: (
-    coordinate: ICoordinate,
-    device: IDevice,
-  ) => Promise<void>;
+interface MapMarkerProps {
+  position: Position;
+  device: Device;
+  reposition: (coordinate: Position) => void;
 }
 
-export function MapMarker({ position, device, reposition }: IMapState) {
-  const [coordinate, setCoordinate] = useState({ latitude: 0, longitude: 0 });
-
+export function MapMarker({ position, device, reposition }: MapMarkerProps) {
+  const [colorMarker, setColorMarker] = useState('');
+  //const { latitude, longitude } = position;
+  //const coordinate = { latitude, longitude };
 
   const { colors } = useTheme();
 
-  let colorMarker = '';
-  if (position.speed > 0) {
-    colorMarker = colors.green[600]
-  }
-  if (position.speed === 0) {
-    colorMarker = colors.red[500]
-  }
-  if (position.speed === 0 && position.rpm > 0) {
-    colorMarker = colors.blue[500]
-  }
+  useEffect(() => {
+    if (position.speed > 0) {
+      setColorMarker(colors.green[600]);
+    } else if (position.speed === 0) {
+      setColorMarker(colors.red[500]);
+    } else if (position.speed === 0 && position.rpm > 0) {
+      setColorMarker(colors.blue[500]);
+    }
+  }, [position]);
 
   return (
     <Marker
-      onPress={() => reposition(coordinate, device)}
-      coordinate={coordinate}
+      onPress={() => reposition(position)}
+      coordinate={position}
     >
       <View
         style={{
@@ -86,6 +78,7 @@ export function MapMarker({ position, device, reposition }: IMapState) {
             <View
               style={{
                 transform: [{ rotate: `${position.course}deg` }],
+                justifyContent: 'center',
                 alignItems: 'center',
               }}
             >
