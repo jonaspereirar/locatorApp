@@ -3,6 +3,7 @@ import MapView from 'react-native-maps';
 import { Fab, Icon, NativeBaseProvider, extendTheme, v3CompatibleTheme } from 'native-base'
 import { View, Animated, Dimensions } from 'react-native';
 import { MaterialIcons, MaterialCommunityIcons } from '@expo/vector-icons';
+import axios from 'axios';
 import RenderInfo from '@components/RenderInfo';
 import moment from 'moment';
 import 'moment/locale/pt';
@@ -10,7 +11,7 @@ import 'moment/locale/pt';
 import { MapMarker } from '../../components/MapMarker';
 
 import { PositionsDTO, DeviceDTO } from '../../dtos';
-import { api } from '../../services/api'
+import * as constants from '../../constants/constants';
 import { useAuth } from '@hooks/useAuth';
 
 interface IRegion {
@@ -62,7 +63,7 @@ export function Map() {
 
   async function loadListVehicles() {
     try {
-      const res = await api.get(`/api/devices?userId=${user.id}`);
+      const res = await axios.get(`${constants.API_BASE_URL}/api/devices?userId=${user.id}`)
       setDevice(res.data);
     } catch (error) {
       console.log(error)
@@ -73,7 +74,7 @@ export function Map() {
 
   async function loadPositions() {
     try {
-      const res = await api.get('/api/positions')
+      const res = await axios.get(`${constants.API_BASE_URL}/api/positions`)
       setPosition(res.data)
     } catch (error) {
       console.log(error)

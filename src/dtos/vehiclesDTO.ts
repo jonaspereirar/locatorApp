@@ -1,5 +1,5 @@
 export interface VehiclesDTO {
-      id: string,
+      id: number,
       name: string,
       color: string,
       avatar: string,

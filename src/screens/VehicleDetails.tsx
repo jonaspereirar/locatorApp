@@ -1,24 +1,17 @@
 import { useNavigation, useRoute } from '@react-navigation/native';
 import MapView, { MapEvent, Marker } from 'react-native-maps';
-import { TouchableOpacity } from 'react-native'
-import { Box, Heading, useTheme, HStack, Icon, Text, View, VStack, Pressable, FlatList } from 'native-base'
-import { Feather } from '@expo/vector-icons';
-
-import { AppNavigatorRoutesProps } from '@routes/app.routes';
+import { Box, Heading, HStack, Text, View, VStack, Pressable, FlatList } from 'native-base'
 
 import { VehiclesDTO } from '@dtos/vehiclesDTO';
-import { useState, useCallback } from 'react';
+import { useState } from 'react';
 import { CardInfoVehicle } from '@components/CardInfoVehicle';
 import { CardInfoHome } from '@components/CardInfoHome';
 import { ReportButton } from '../components/ReportButton'
 
-//import VehicleDetailsTrips from './VehicleDetailsTrips';
-
 interface Params {
   vehicle: VehiclesDTO;
 }
-
-interface NavigationProps {
+export interface NavigationProps {
   navigate: (
     screen: string,
     param: {
@@ -30,23 +23,25 @@ interface NavigationProps {
 export function VehicleDetails() {
   const [position, setPosition] = useState({ latitude: 0, longitude: 0 });
   const [groupSelected, setGroupSelected] = useState('')
-  const navigation = useNavigation<AppNavigatorRoutesProps>()
+  const navigation = useNavigation<NavigationProps>();
   const [cards, setCards] = useState([1])
 
   const route = useRoute();
   const { vehicle } = route.params as Params;
 
+
   function handleSelectMapPosition(e: MapEvent) {
     setPosition(e.nativeEvent.coordinate);
   }
 
-  function handleVehicleDetailsTrips() {
-    navigation.navigate('VehicleDetailsTrips')
+  function handleVehicleDetailsStops(vehicle: VehiclesDTO) {
+    navigation.navigate('VehicleDetailsStops', { vehicle })
   }
 
-  function handleGoBack() {
-    navigation.goBack();
+  function VehicleDetailsTrips(vehicle: VehiclesDTO) {
+    navigation.navigate('VehicleDetailsTrips', { vehicle })
   }
+
 
   return (
 
@@ -73,7 +68,6 @@ export function VehicleDetails() {
                 longitudeDelta: 0.0421,
               }}
               provider="google"
-            // onLayout={this.onLayout([vehicleCoordinates])}
             >
               {position.latitude !== 0 && (
                 <Marker
@@ -155,19 +149,14 @@ export function VehicleDetails() {
       </Box>
       <HStack ml='auto' mr='auto'>
         <VStack mb='4' flexDirection='column' ml='4' mr='4'>
-          <ReportButton onPress={handleVehicleDetailsTrips} iconColor='green.400' color='white' title="Viagens" mt={3} />
+          <ReportButton onPress={() => handleVehicleDetailsStops(vehicle)} iconColor='green.400' color='white' title="Viagens" mt={3} />
           <ReportButton iconColor='blue.500' color='white' title="Eventos" mt={3} />
         </VStack>
         <VStack mb='4' flexDirection='column' ml='4' mr='4'>
-          <ReportButton iconColor='sunglow.100' color='white' title="Paragens" mt={3} />
+          <ReportButton onPress={() => VehicleDetailsTrips(vehicle)} iconColor='sunglow.100' color='white' title="Paragens" mt={3} />
           <ReportButton iconColor='green.400' color='white' title="Paragens" mt={3} />
         </VStack>
       </HStack>
-
-
-      <TouchableOpacity onPress={handleGoBack}>
-        <Icon as={Feather} name='arrow-left' color='green.400' size={6} />
-      </TouchableOpacity>
     </VStack>
 
   )

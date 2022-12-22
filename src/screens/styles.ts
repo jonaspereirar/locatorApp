@@ -27,10 +27,9 @@ export default StyleSheet.create({
     position: 'absolute',
     alignItems: 'center',
     borderRadius: 20,
+    marginHorizontal: 15,
     height: 80,
-    width: Platform.OS === 'android' ? 77 : 100,
-    marginLeft: 275,
-    marginTop: 105,
+    width: Platform.OS === 'android' ? 90 : 110,
 
   },
   fuelCard: {
@@ -38,10 +37,9 @@ export default StyleSheet.create({
     alignItems: 'center',
     borderRadius: 20,
     height: 80,
-    width: 250,
+    width: Platform.OS === 'android' ? 232 : 250,
     marginHorizontal: 15,
-    marginRight: 'auto',
-    marginTop: 5,
+    marginLeft: 'auto',
   },
   listItem: {
     flexDirection: 'column',

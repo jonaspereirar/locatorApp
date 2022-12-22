@@ -1,0 +1,18 @@
+export interface VehicleDetailsStopsDTO {
+   address: string,
+    averageSpeed: number,
+    deviceId: number,
+    deviceName: string,
+    distance: number,
+    duration: number,
+    endOdometer: number,
+    endTime: string,
+    engineHours: number,
+    latitude: number,
+    longitude: number,
+    maxSpeed: number,
+    positionId: number,
+    spentFuel: number,
+    startOdometer: number,
+    startTime: string,
+}

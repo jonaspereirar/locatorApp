@@ -6,15 +6,19 @@ import { VehicleList } from "@screens/TabBottom/VehicleList";
 import { Map, MapProps } from "@screens/TabBottom/Map";
 import { More } from "@screens/TabBottom/More";
 import { VehicleDetails } from '@screens/VehicleDetails';
-// import { VehicleDetailsTrips } from '@screens/VehicleDetailsTrips';
+import { VehicleDetailsStops } from '@screens/VehicleDetailsStops';
+import { VehicleDetailsTrips } from '@screens/VehicleDetailsTrips';
+
 
 type AppRoutes = {
   Veículos: undefined;
   Mapa: MapProps | undefined;
   Mais: undefined;
   VehicleDetails: undefined;
-  VehicleDetailsTrips: undefined;
+  VehicleDetailsStops: undefined;
+  VehicleDetailsTrips: undefined
 }
+
 
 export type AppNavigatorRoutesProps = BottomTabNavigationProp<AppRoutes>
 
@@ -22,6 +26,7 @@ const App = createBottomTabNavigator<AppRoutes>();
 
 export function AppRoutes() {
   const { sizes, colors } = useTheme();
+
 
   const iconSize = sizes[8];
   return (
@@ -87,11 +92,17 @@ export function AppRoutes() {
         options={{ tabBarButton: () => null, tabBarStyle: { display: 'none' } }}
       />
 
-      {/* <App.Screen
+      <App.Screen
+        name="VehicleDetailsStops"
+        component={VehicleDetailsStops}
+        options={{ tabBarButton: () => null, tabBarStyle: { display: 'none' } }}
+      />
+
+      <App.Screen
         name="VehicleDetailsTrips"
         component={VehicleDetailsTrips}
         options={{ tabBarButton: () => null, tabBarStyle: { display: 'none' } }}
-      /> */}
+      />
     </App.Navigator>
   )
 }

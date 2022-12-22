@@ -1,16 +1,17 @@
 import { useState, useEffect } from 'react'
 import { useNavigation } from '@react-navigation/native';
 import { FlatList, View } from 'native-base'
+import axios from 'axios';
 
 import { Header } from '@components/Header';
 import { VehiclesDTO } from '../../dtos';
 import { Loading } from '../../components/Loading';
-import { api } from '../../services/api'
 import { useAuth } from '@hooks/useAuth';
 
 import { GroupVehicleButton } from '@components/GroupVehicleButton';
+import * as constants from '../../constants/constants';
 
-interface NavigationProps {
+export interface NavigationProps {
   navigate: (
     screen: string,
     param: {
@@ -35,7 +36,7 @@ export function VehicleList() {
   useEffect(() => {
     async function loadListVehicles() {
       try {
-        const response = await api.get(`/api/devices?userId=${user.id}`);
+        const response = await axios.get(`${constants.API_BASE_URL}/api/devices?userId=${user.id}`);
         setVehicles(response.data);
       } catch (error) {
         console.log(error)
@@ -54,7 +55,7 @@ export function VehicleList() {
           bounces={false}
           key='item'
           data={vehicles}
-          keyExtractor={item => item.id}
+          keyExtractor={item => String(item.id)}
           renderItem={({ item }) =>
             <GroupVehicleButton
               speed={item.speed}
