@@ -5,7 +5,16 @@ import {
 import { FontAwesome } from '@expo/vector-icons';
 import colors from '../constants/colors';
 
-const TruckIcon = function (props) {
+type Props = {
+  item: {
+    speed: number,
+    rpm: number,
+    status: string,
+    category: string,
+  },
+};
+
+const TruckIcon = function (props: Props) {
   const { item } = props;
   let iconColor = '';
   if (item.speed > 0) {

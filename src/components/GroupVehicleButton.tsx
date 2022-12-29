@@ -34,7 +34,7 @@ export function GroupVehicleButton({
       h={20}
       bg='gray.100'
       rounded="md"
-      backgroundColor={colors.gray[200]}
+      backgroundColor={colors.gray[100]}
       overflow='hidden'
       isPressed={isActive}
       _pressed={{

@@ -1,5 +1,8 @@
 import { PositionsDTO } from './PositionsDTO'
-import { DeviceDTO } from './DeviceDTO'
 import { VehiclesDTO } from './vehiclesDTO'
+import { VehicleDetailsEventsDTO } from './VehicleDetailsEventsDTO'
+import { VehicleDetailsStopsDTO } from './VehicleDetailsStopsDTO'
+import { VehicleDetailsTripsDTO } from './VehicleDetailsTripsDTO'
+import { DeviceDTO } from './deviceDTO'
 
-export { PositionsDTO, DeviceDTO, VehiclesDTO}
+export {DeviceDTO, PositionsDTO, VehicleDetailsTripsDTO, VehicleDetailsStopsDTO, VehicleDetailsEventsDTO, VehiclesDTO}

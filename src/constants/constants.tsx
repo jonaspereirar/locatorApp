@@ -1,14 +1,14 @@
 import moment from 'moment';
 
 // API EndPoints
-export const API_BASE_URL = 'https://gpsdata.tlbt.pt';
-export const URL_WSS = 'wss://gpsdata.tlbt.pt/api/socket';
+export const API_BASE_URL: string = 'https://gpsdata.tlbt.pt';
+export const URL_WSS: string = 'wss://gpsdata.tlbt.pt/api/socket';
 
 // DateTime format
-export const DATE_TIME_FORMAT = 'HH:mm';
+export const DATE_TIME_FORMAT: string = 'HH:mm';
 
 // Milliseconds to Hms
-export const getMillisecondsFormattedHms = (milliseconds) => {
+export const getMillisecondsFormattedHms = (milliseconds: number): string => {
   // Get hours from milliseconds
   const hours = milliseconds / (1000 * 60 * 60);
   const absoluteHours = Math.floor(hours);
@@ -25,7 +25,7 @@ export const getMillisecondsFormattedHms = (milliseconds) => {
   return `${h}:${m}:${s}`;
 };
 
-export const getHourFormattedHms = (milliseconds) => {
+export const getHourFormattedHms = (milliseconds: number): string => {
   // Get hours from milliseconds
   const hours = milliseconds / (1000 * 60 * 60);
   const absoluteHours = Math.floor(hours);
@@ -42,7 +42,7 @@ export const getHourFormattedHms = (milliseconds) => {
   return `${`${h}h`}`;
 };
 
-export const getMinutesFormattedHms = (milliseconds) => {
+export const getMinutesFormattedHms = (milliseconds: number): string => {
   // Get hours from milliseconds
   const hours = milliseconds / (1000 * 60 * 60);
   const absoluteHours = Math.floor(hours);
@@ -53,7 +53,7 @@ export const getMinutesFormattedHms = (milliseconds) => {
   return `${`${m}m`}`;
 };
 
-export const getFormattedDateFromIsoString = (isoStringDate) => {
+export const getFormattedDateFromIsoString = (isoStringDate: string): string => {
   const momentDate = moment(isoStringDate);
   return momentDate.format(DATE_TIME_FORMAT);
 };

@@ -1,7 +1,10 @@
+import { VehiclesDTO } from "@dtos/vehiclesDTO";
+
 export type UserDTO = {
   id: string;
   name: string;
   email: string;
+  vehicles: VehiclesDTO;
 }
 
 export interface ISignInCredencials {
@@ -11,7 +14,6 @@ export interface ISignInCredencials {
 
 export interface IAuthState {
   user: UserDTO;
-  token: string;
 }
 
 export type AuthContextDataProps = {

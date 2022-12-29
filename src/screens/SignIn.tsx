@@ -1,5 +1,5 @@
 import { Controller, useForm } from 'react-hook-form';
-import { VStack, Image, Text, Center, Heading, ScrollView, useToast } from "native-base";
+import { VStack, Image, Text, Center, Heading, ScrollView, useToast, useTheme } from "native-base";
 
 import { useAuth } from '@hooks/useAuth';
 
@@ -12,12 +12,14 @@ import { Input } from "@components/Input";
 import { Button } from "@components/Button";
 import { useState } from 'react';
 
+
 type FormData = {
   email: string;
   password: string;
 }
 
 export function SignIn() {
+  const { colors } = useTheme();
   const [isLoading, setIsLoading] = useState(false)
 
   const { singIn } = useAuth();
@@ -50,7 +52,7 @@ export function SignIn() {
       showsVerticalScrollIndicator={false}
       backgroundColor='transparent'
     >
-      <VStack flex={1} px={10} pb={16}>
+      <VStack flex={1} px={10} pb={16} backgroundColor={colors.green[800]}>
         <Image
           source={Background}
           defaultSource={Background}

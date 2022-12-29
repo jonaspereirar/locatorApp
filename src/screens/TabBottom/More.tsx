@@ -1,5 +1,5 @@
-import { Center, Text, Icon, View, VStack, List, HStack, extendTheme, v3CompatibleTheme, NativeBaseProvider } from 'native-base'
-import { Alert, Linking } from 'react-native';
+import { Text, Icon, View, VStack, List } from 'native-base'
+import { Linking } from 'react-native';
 import { TouchableOpacity } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 

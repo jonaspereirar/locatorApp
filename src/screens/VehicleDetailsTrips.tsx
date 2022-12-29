@@ -1,28 +1,26 @@
 import React, { useEffect, useState } from "react";
+import { Dimensions } from "react-native";
 import { useNavigation, useRoute } from '@react-navigation/native';
 import axios from "axios";
 import moment from "moment";
 import {
   View,
-  Text,
   Card,
   Box,
-  Button,
   NativeBaseProvider,
   extendTheme,
   v3CompatibleTheme,
   FlatList,
-  HStack,
   VStack,
 } from "native-base";
 import CalendarStrip from "react-native-calendar-strip";
-
 import Timeline from "../components/timeline";
 import * as constants from "../constants/constants";
 import styles from "./styles";
 import { VehiclesDTO } from "@dtos/vehiclesDTO";
 import { VehicleDetailsTripsDTO } from "@dtos/VehicleDetailsTripsDTO";
 import { Loading } from "@components/Loading";
+import { Header } from "@components/Header";
 
 interface Params {
   vehicle: VehiclesDTO;
@@ -49,10 +47,10 @@ type Report = {
 };
 
 export function VehicleDetailsTrips() {
+  const { width, height } = Dimensions.get('window')
   const [loading, setLoading] = useState(false);
   const [showMap, setShowMap] = useState(false);
   const [trips, setTrips] = useState<VehicleDetailsTripsDTO[]>([]);
-  const [summary, setSummary] = useState<VehicleDetailsTripsDTO[]>([]);
   const [routeCoordinates, setRouteCoordinates] = useState<Coordinate[]>([]);
   const [waitingResponse, setWaitingResponse] = useState(false);
   const [messageToDisplay, setMessageToDisplay] = useState<string | undefined>(undefined);
@@ -66,37 +64,22 @@ export function VehicleDetailsTrips() {
     navigation.navigate('Map', { vehicle });
   };
 
+  function handleVehicleDetails(vehicle: VehiclesDTO) {
+    navigation.navigate('VehicleDetails', { vehicle })
+  }
+
   useEffect(() => {
     fetchDailyTrips(vehicle);
-    fetchDailySummaryDaily(selectedDate);
   }, []);
 
   const onSelectedDayChanged = (selectedDate: moment.Moment) => {
     fetchDailyTrips(vehicle, selectedDate);
-    fetchDailySummaryDaily(selectedDate);
   };
 
   const onSelectedDayChangeInMap = (momentDate: moment.Moment) => {
     onSelectedDayChanged(momentDate);
     fetchSummaryMap(momentDate);
   };
-
-
-  function fetchDailySummaryDaily(selectedDayMoment?: moment.Moment | undefined, vehicle?: VehicleDetailsTripsDTO) {
-    const fromMoment = selectedDayMoment === undefined ? moment().startOf('day') : selectedDayMoment.startOf('day');
-    const toMoment = fromMoment.clone().add(1, 'day');
-    const url = `${constants.API_BASE_URL}/api/reports/route?from=${fromMoment.toISOString()}&to=${toMoment.toISOString()}&deviceId=${vehicle?.deviceId}`;
-    axios.get(url)
-      .then((response) => {
-        setLoading(false);
-        setSummary(response.data);
-        console.log(response.data)
-        setSelectedDate(selectedDate);
-      })
-      .catch((error) => {
-        setLoading(false);
-      });
-  }
 
   const getRouteCoordinatesFromReport = (routesReport: Report[]): Coordinate[] => {
     const routeCoordinates: Coordinate[] = [];
@@ -156,104 +139,68 @@ export function VehicleDetailsTrips() {
       });
   }
 
+  return (
+    <NativeBaseProvider theme={extendTheme(v3CompatibleTheme)}>
+      <Header name={vehicle.name} onPress={() => handleVehicleDetails(vehicle)} />
+      <View>
+        <CalendarStrip
+          daySelectionAnimation={
+            {
+              type: 'border',
+              duration: 200,
+              borderWidth: 1,
+              borderHighlightColor: 'white',
+            }
+          }
+          style={{ height: 100, paddingTop: 5, paddingBottom: 5 }}
+          calendarHeaderStyle={{ color: 'white' }}
+          calendarColor="#008385"
+          dateNumberStyle={{ color: 'white' }}
+          dateNameStyle={{ color: 'white' }}
+          highlightDateNumberStyle={{ color: 'yellow' }}
+          highlightDateNameStyle={{ color: 'yellow' }}
+          disabledDateNameStyle={{ color: 'black' }}
+          disabledDateNumberStyle={{ color: 'black' }}
+          iconContainer={{ flex: 0.1 }}
+          onDateSelected={onSelectedDayChanged}
+          selectedDate={selectedDate}
+        />
+      </View>
+      <VStack>
+        <View mt='1' mb={height / 5}>
 
-  if (!showMap || waitingResponse) {
-    return (
-      <NativeBaseProvider theme={extendTheme(v3CompatibleTheme)}>
-        <VStack>
-          <View mt='20' mb='48'>
-
-            {loading ? <Loading /> : (
-              <FlatList
-                data={trips}
-                key={'trips'}
-                keyExtractor={(trips, index) => String(index)}
-                style={{ marginBottom: 32 }}
-                renderItem={({ item }) => (
-                  <Box
-                    // borderBottomWidth="5"
-                    // borderColor="coolGray.200"
-                    pl="4"
-                    pr="5"
-                    py="2"
-                  >
-                    <Card style={styles.card}>
-                      <View style={styles.listItem}>
-                        <Timeline
-                          data={item}
-                          extraData={
-                            constants.getHourFormattedHms(item.duration)
-                              < constants.getFormattedDateFromIsoString(3600000)
-                              ? constants.getMinutesFormattedHms(item.duration)
-                              : constants.getHourFormattedHms(item.duration)
-                          }
-                        />
-                      </View>
-                    </Card>
-                  </Box>
-                )}
-              />
-            )}
-            <HStack flex={1} ml='5'>
-              <Card style={styles.fuelCard}>
-                {summary.map((data, key) => (
-                  <View key={key}>
-                    <Text style={styles.textRunCard}>
-                      Distância Total:
-                      {(data.distance / 1000).toFixed(2)}
-                      Km
-                    </Text>
-                    <Text style={styles.textRunCard}>
-                      Consumo Total:
-                      {(data.spentFuel).toFixed(1)}
-                      L
-                    </Text>
-                  </View>
-                ))}
-              </Card>
-              <Card style={styles.runCard}>
-                <Text style={styles.textRunCard}>
-                  Trajeto
-                  <Button
-                    background="#008385"
-                    onPress={() => onSelectedDayChangeInMap(selectedDate)}
-                  />
-                  <Text style={styles.boldText}>
-                    {messageToDisplay}
-                  </Text>
-                </Text>
-              </Card>
-            </HStack>
-          </View>
-
-          <View mt='-20' mb='-12'>
-            <CalendarStrip
-              calendarHeaderPosition="above"
-              daySelectionAnimation={
-                {
-                  type: 'border',
-                  duration: 200,
-                  borderWidth: 1,
-                  borderHighlightColor: '#1DE9B6',
-                }
-              }
-              style={{ height: 100, paddingTop: -8, paddingBottom: -8 }}
-              calendarHeaderStyle={{ color: 'white' }}
-              calendarColor="transparent"
-              dateNumberStyle={{ color: 'white' }}
-              dateNameStyle={{ color: 'white' }}
-              highlightDateNumberStyle={{ color: '#1DE9B6' }}
-              highlightDateNameStyle={{ color: '#1DE9B6' }}
-              disabledDateNameStyle={{ color: 'white' }}
-              disabledDateNumberStyle={{ color: 'white' }}
-              iconContainer={{ flex: 0.1 }}
-              onDateSelected={onSelectedDayChanged}
-              selectedDate={selectedDate}
+          {loading ? <Loading /> : (
+            <FlatList
+              data={trips}
+              key={'trips'}
+              keyExtractor={(trips, index) => String(index)}
+              style={{ marginBottom: 32 }}
+              renderItem={({ item }) => (
+                <Box
+                  pl="4"
+                  pr="5"
+                  py="2"
+                >
+                  <Card style={styles.card}>
+                    <View style={styles.listItem}>
+                      <Timeline
+                        data={item}
+                        extraData={
+                          constants.getHourFormattedHms(item.duration)
+                            < constants.getFormattedDateFromIsoString(3600000)
+                            ? constants.getMinutesFormattedHms(item.duration)
+                            : constants.getHourFormattedHms(item.duration)
+                        }
+                      />
+                    </View>
+                  </Card>
+                </Box>
+              )}
             />
-          </View>
-        </VStack>
-      </NativeBaseProvider>
-    );
-  }
-};
+          )}
+        </View>
+      </VStack>
+    </NativeBaseProvider>
+  );
+}
 

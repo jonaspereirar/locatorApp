@@ -2,42 +2,43 @@ import { Dimensions } from 'react-native'
 import { HStack, VStack, Center, Text, Heading, } from 'native-base'
 
 interface Props {
-  power: number
-  fuel: number
-  rpm: number
-  status: string
-  distance: number
-  isActive: boolean
+  data: {
+    rpm: number
+    engineTemperature: number
+    fuel: number
+    distance: number
+    Odometro: number
+  }
 }
 
 
-export function CardInfoVehicle({
-  power, fuel, rpm, status, distance, isActive, ...rest }: Props) {
+export function CardInfoVehicle({ data, ...rest }: Props) {
   const { width } = Dimensions.get('window')
 
   return (
     <HStack
-      mt={1}
       w={width}
-      h={48}
+      mt={1}
       backgroundColor='gray.200'
+      borderColor='blue.300'
+      borderWidth={2}
       overflow='hidden'
     >
       <Center>
         <VStack
-          ml={8}
-          mt={2}
+          ml='2'
+          mt='2'
           mb='1'
           {...rest}
         >
-          <Heading mb={5}>
+          <Heading mb={1}>
             Informação CAN
           </Heading>
-          <Text color="gray.700" fontSize='md'>
-            Rotações do motor: {rpm}{'\n'}
-            Temperatura refrigerante do motor: {power}{'\n'}
-            Nível de combustível: {fuel}{'\n'}
-            Odómetro: {distance}
+          <Text color="gray.700" fontSize='sm'>
+            Rotações do motor: {data.rpm}{'\n'}
+            Temperatura refrigerante do motor: {data.engineTemperature}{'\n'}
+            Nível de combustível: {data.fuel}{'\n'}
+            Odómetro: {data.distance}
           </Text>
         </VStack>
       </Center>

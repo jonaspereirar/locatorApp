@@ -24,7 +24,6 @@ interface SignInCredencials {
 
 interface AuthState {
   user: User;
-  token: string;
 }
 
 interface AuthContextData {
@@ -47,15 +46,14 @@ export default function AuthProvider({ children }: IProps) {
 
   useEffect(() => {
     async function loadStoragedData(): Promise<void> {
-      const [token, user] = await AsyncStorage.multiGet([
-        "@TLBT:token",
+      const [user] = await AsyncStorage.multiGet([
         "@TLBT:user",
       ]);
 
-      if (token[1] && user[1]) {
-        axios.defaults.headers.authorization = `Bearer ${token[1]}`;
+      if (user[1]) {
+        axios.defaults.headers.authorization = `Bearer ${user[1]}`;
 
-        setData({ token: token[1], user: JSON.parse(user[1]) });
+        setData({ user: JSON.parse(user[1]) });
       }
 
       setLoading(false);
@@ -90,11 +88,10 @@ export default function AuthProvider({ children }: IProps) {
       await AsyncStorage.setItem("@TLBT:user", JSON.stringify(user));
 
       setData({
-        token: data.token,
         user,
       });
     },
-    [setData, data.token],
+    [setData],
   );
 
   return (

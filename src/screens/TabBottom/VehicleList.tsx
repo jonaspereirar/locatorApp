@@ -3,8 +3,7 @@ import { useNavigation } from '@react-navigation/native';
 import { FlatList, View } from 'native-base'
 import axios from 'axios';
 
-import { Header } from '@components/Header';
-import { VehiclesDTO } from '../../dtos';
+import { DeviceDTO } from '../../dtos';
 import { Loading } from '../../components/Loading';
 import { useAuth } from '@hooks/useAuth';
 
@@ -15,21 +14,21 @@ export interface NavigationProps {
   navigate: (
     screen: string,
     param: {
-      vehicle: VehiclesDTO
+      vehicle: DeviceDTO
     }
   ) => void
 }
 
 export function VehicleList() {
   const [loading, setLoading] = useState(true)
-  const [vehicles, setVehicles] = useState<VehiclesDTO[]>([]);
+  const [vehicles, setVehicles] = useState<DeviceDTO[]>([]);
   const [groupSelected, setGroupSelected] = useState('')
 
   const { user } = useAuth();
 
   const navigation = useNavigation<NavigationProps>();
 
-  function handleVehicleDetails(vehicle: VehiclesDTO) {
+  function handleVehicleDetails(vehicle: DeviceDTO) {
     navigation.navigate('VehicleDetails', { vehicle })
   }
 
@@ -48,8 +47,7 @@ export function VehicleList() {
   }, [])
 
   return (
-    <View backgroundColor='transparent'>
-      <Header />
+    <View backgroundColor='transparent' mt='32'>
       {loading ? <Loading /> :
         <FlatList
           bounces={false}
@@ -66,7 +64,6 @@ export function VehicleList() {
               rpm={item.rpm}
               status={item.status}
               isActive={groupSelected.toLocaleUpperCase() === item.name.toLocaleUpperCase()}
-              // onPress={() => setGroupSelected(item.name)}
               onPress={() => handleVehicleDetails(item)}
             />
           }

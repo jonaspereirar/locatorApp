@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { useRoute } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import {
   View, Text, NativeBaseProvider, extendTheme, v3CompatibleTheme, Box, HStack, VStack, FlatList, useTheme,
 } from 'native-base';
+import { Dimensions } from 'react-native'
 import axios from 'axios';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import moment from 'moment';
@@ -11,6 +12,7 @@ import * as constants from '../constants/constants';
 import { VehicleDetailsStopsDTO } from '@dtos/VehicleDetailsStopsDTO';
 import { VehiclesDTO } from '../dtos/vehiclesDTO';
 import { Loading } from '@components/Loading';
+import { Header } from '@components/Header';
 
 interface Params {
   vehicle: VehiclesDTO;
@@ -27,9 +29,11 @@ export interface NavigationProps {
 }
 
 export function VehicleDetailsStops() {
+  const { height, width } = Dimensions.get('window')
   const [loading, setLoading] = useState(false);
   const [stops, setStops] = useState<VehicleDetailsStopsDTO[]>([]);
   const [selectedDate, setSelectedDate] = useState(moment());
+  const navigation = useNavigation<NavigationProps>();
 
   const route = useRoute();
   const { vehicle } = route.params as Params;
@@ -49,7 +53,6 @@ export function VehicleDetailsStops() {
       const fromMoment = selectedDayMoment === undefined ? moment().startOf('day') : selectedDayMoment.startOf('day');
       const toMoment = fromMoment.clone().add(1, 'day');
       const response = await axios.get(`${constants.API_BASE_URL}/api/reports/stops?from=${fromMoment.toISOString()}&to=${toMoment.toISOString()}&deviceId=${vehicle.id}`);
-
       setLoading(false);
       setStops(response.data);
       setSelectedDate(selectedDateMonment);
@@ -59,36 +62,65 @@ export function VehicleDetailsStops() {
       setLoading(false);
     }
   };
+  function handleVehicleDetails(vehicle: VehiclesDTO) {
+    navigation.navigate('VehicleDetails', { vehicle })
+  }
 
   return (
-    <NativeBaseProvider
-      theme={extendTheme(v3CompatibleTheme)}
-    >
+    <NativeBaseProvider theme={extendTheme(v3CompatibleTheme)}>
+      <Header name={vehicle.name} onPress={() => handleVehicleDetails(vehicle)} />
+      <CalendarStrip
+        daySelectionAnimation={
+          {
+            type: 'border',
+            duration: 200,
+            borderWidth: 1,
+            borderHighlightColor: 'white',
+          }
+        }
+        style={{ height: 100, paddingTop: 5, paddingBottom: 5 }}
+        calendarHeaderStyle={{ color: 'white' }}
+        calendarColor="#008385"
+        dateNumberStyle={{ color: 'white' }}
+        dateNameStyle={{ color: 'white' }}
+        highlightDateNumberStyle={{ color: 'yellow' }}
+        highlightDateNameStyle={{ color: 'yellow' }}
+        disabledDateNameStyle={{ color: 'black' }}
+        disabledDateNumberStyle={{ color: 'black' }}
+        iconContainer={{ flex: 0.1 }}
+        onDateSelected={onSelectedDayChanged}
+        selectedDate={selectedDate}
+      />
       <VStack>
-        <View mt='20' mb='2'>
+        <View mt='1' mb={height / 6}>
           {loading ? <Loading /> : (
             <FlatList
               data={stops}
               key={'stops'}
-              style={{ marginBottom: 32 }}
+              showsVerticalScrollIndicator={false}
+              style={{ marginBottom: 64, marginLeft: 10, marginRight: 10 }}
               keyExtractor={(stops, index) => String(index)}
               renderItem={({ item }) => (
                 <Box
-                  borderBottomWidth="8"
+                  bg='white'
+                  borderRadius='10'
+                  borderBottomWidth="12"
                   borderColor="coolGray.500"
+                  shadow='2'
+                  p='15'
                   pl="4"
                   pr="5"
                   py="2"
                 >
-                  <VStack>
-                    <View ml='1'>
-                      <Text color='green.400'>
-                        <MaterialCommunityIcons name="google-maps" />
-                        {item.address}
-                      </Text>
-                    </View>
+                  <HStack>
+                    <MaterialCommunityIcons name='map-marker-outline' size={20} color='#464444' />
+                    <Text style={{ color: '#464444', fontSize: 12 }}>
+                      {item.address}
+                    </Text>
+                  </HStack>
+                  <HStack>
                     <View ml='8'>
-                      <Text color='green.400' >
+                      <Text color='#5fb504' >
                         De:
                         {' '}
                         {constants.getFormattedDateFromIsoString(item.startTime)}
@@ -104,36 +136,11 @@ export function VehicleDetailsStops() {
                       </Text>
                     </View>
 
-                  </VStack>
+                  </HStack>
                 </Box>
               )}
             />
           )}
-        </View>
-        <View mt='-8' mb='-32'>
-          <CalendarStrip
-            calendarHeaderPosition="above"
-            daySelectionAnimation={
-              {
-                type: 'border',
-                duration: 200,
-                borderWidth: 1,
-                borderHighlightColor: '#1DE9B6',
-              }
-            }
-            style={{ height: 100, paddingTop: -16, paddingBottom: -16 }}
-            calendarHeaderStyle={{ color: 'white' }}
-            calendarColor="transparent"
-            dateNumberStyle={{ color: 'white' }}
-            dateNameStyle={{ color: 'white' }}
-            highlightDateNumberStyle={{ color: '#1DE9B6' }}
-            highlightDateNameStyle={{ color: '#1DE9B6' }}
-            disabledDateNameStyle={{ color: 'white' }}
-            disabledDateNumberStyle={{ color: 'white' }}
-            iconContainer={{ flex: 0.1 }}
-            onDateSelected={onSelectedDayChanged}
-            selectedDate={selectedDate}
-          />
         </View>
       </VStack>
     </NativeBaseProvider>
