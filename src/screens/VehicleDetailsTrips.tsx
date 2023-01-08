@@ -12,6 +12,9 @@ import {
   v3CompatibleTheme,
   FlatList,
   VStack,
+  HStack,
+  Text,
+  Button,
 } from "native-base";
 import CalendarStrip from "react-native-calendar-strip";
 import Timeline from "../components/timeline";
@@ -21,19 +24,18 @@ import { VehiclesDTO } from "@dtos/vehiclesDTO";
 import { VehicleDetailsTripsDTO } from "@dtos/VehicleDetailsTripsDTO";
 import { Loading } from "@components/Loading";
 import { Header } from "@components/Header";
+import { PositionsDTO } from "@dtos/PositionsDTO";
 
 interface Params {
   vehicle: VehiclesDTO;
+  position: PositionsDTO
   selectedDayMoment?: moment.Moment;
   momentDate?: moment.Moment;
 }
 export interface NavigationProps {
   navigate: (
     screen: string,
-    param: {
-      vehicle: VehiclesDTO
-    }
-  ) => void
+    param: Params) => void
 }
 
 type Coordinate = {
@@ -58,14 +60,14 @@ export function VehicleDetailsTrips() {
   const navigation = useNavigation<NavigationProps>();
 
   const route = useRoute();
-  const { vehicle } = route.params as Params;
+  const { vehicle, position } = route.params as Params;
 
-  const navigateToMap = (vehicle: VehiclesDTO) => {
-    navigation.navigate('Map', { vehicle });
-  };
+  function navigateToMap({ vehicle, position }: Params) {
+    navigation.navigate('Map', { vehicle, position })
+  }
 
-  function handleVehicleDetails(vehicle: VehiclesDTO) {
-    navigation.navigate('VehicleDetails', { vehicle })
+  function handleVehicleDetails({ vehicle, position }: Params) {
+    navigation.navigate('VehicleDetails', { vehicle, position })
   }
 
   useEffect(() => {
@@ -141,7 +143,7 @@ export function VehicleDetailsTrips() {
 
   return (
     <NativeBaseProvider theme={extendTheme(v3CompatibleTheme)}>
-      <Header name={vehicle.name} onPress={() => handleVehicleDetails(vehicle)} />
+      <Header name={vehicle.name} onPress={() => handleVehicleDetails({ vehicle, position })} />
       <View>
         <CalendarStrip
           daySelectionAnimation={
@@ -152,7 +154,7 @@ export function VehicleDetailsTrips() {
               borderHighlightColor: 'white',
             }
           }
-          style={{ height: 100, paddingTop: 5, paddingBottom: 5 }}
+          style={{ height: 90, paddingTop: 1, paddingBottom: 5 }}
           calendarHeaderStyle={{ color: 'white' }}
           calendarColor="#008385"
           dateNumberStyle={{ color: 'white' }}
@@ -166,15 +168,40 @@ export function VehicleDetailsTrips() {
           selectedDate={selectedDate}
         />
       </View>
+      <HStack bg='#008385' alignItems='center' alignContent='center' >
+        <VStack>
+          <Box flexDirection='row' bg='#008385'>
+            <Text ml='4' color='white' fontSize='md' fontWeight='md'>
+              Distancia total: 190.75 </Text>
+            <Text mt='1.5' color='white' fontSize='xs' fontWeight='md' >KM</Text>
+          </Box>
+          <Box flexDirection='row' w='full' bg='#008385'>
+            <Text ml='4' color='white' fontSize='md' fontWeight='md'>
+              Consumo total: 89 </Text>
+            <Text mt='1.5' color='white' fontSize='xs' fontWeight='md' >L</Text>
+          </Box>
+        </VStack>
+        <View alignContent='center' alignItems='center' >
+          <Box mb='2' ml='6' height='12' borderRadius='20' background='white'>
+            <Box mb='1' ml='1' mr='1' height='12' borderRadius='20' background='#008385' >
+              <Button onPress={() => onSelectedDayChangeInMap(selectedDate)} borderRadius='20' _pressed={{ bg: '#01484a' }} bg='transparent'>
+                <Text ml='4' mr='4' color='white' fontSize='md' fontWeight='bold'>
+                  Trajeto </Text>
+              </Button>
+            </Box>
+          </Box>
+        </View>
+      </HStack>
+
       <VStack>
-        <View mt='1' mb={height / 5}>
+        <View mt='1' mb={height / 4}>
 
           {loading ? <Loading /> : (
             <FlatList
               data={trips}
               key={'trips'}
               keyExtractor={(trips, index) => String(index)}
-              style={{ marginBottom: 32 }}
+              style={{ marginBottom: '10%' }}
               renderItem={({ item }) => (
                 <Box
                   pl="4"
@@ -187,7 +214,7 @@ export function VehicleDetailsTrips() {
                         data={item}
                         extraData={
                           constants.getHourFormattedHms(item.duration)
-                            < constants.getFormattedDateFromIsoString(3600000)
+                            < constants.getFormattedDateFromIsoString('3600000')
                             ? constants.getMinutesFormattedHms(item.duration)
                             : constants.getHourFormattedHms(item.duration)
                         }

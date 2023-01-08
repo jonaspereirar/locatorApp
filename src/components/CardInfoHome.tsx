@@ -2,20 +2,21 @@ import { Dimensions } from 'react-native'
 import { HStack, VStack, Center, Text } from 'native-base'
 
 interface Props {
-  address: string
-  lastUpdate: string
-  speed: number
-  status: string
 
   data: {
-    ignition: boolean
+    address: string
+    lastUpdate: string
+    status: string
     speed: number
-    voltmeter: number
+    attributes: {
+      ignition: boolean
+      voltmeter: number
+    }
   }
 }
 
 export function CardInfoHome({
-  address, speed, lastUpdate, status, data, ...rest }: Props) {
+  data, ...rest }: Props) {
   const { width } = Dimensions.get('window')
 
   return (
@@ -37,16 +38,16 @@ export function CardInfoHome({
               Velocidade: {data.speed}
             </Text>
             <Text color="white" fontSize='sm' ml='40' mt='-6'>
-              última atualização: {lastUpdate}
+              última atualização: {data.lastUpdate}
             </Text>
           </VStack>
           <Text mb={3} color="white" fontSize='md'>
-            Morada: {address}
+            Morada: {data.address}
           </Text>
           <Text color="white" fontSize='sm'>
-            Estado: {status}{'\n'}
-            Ignição: {data.ignition}{'\n'}
-            Voltímetro: {data.voltmeter}
+            Estado: {data.status}{'\n'}
+            Ignição: {data.attributes.ignition}{'\n'}
+            Voltímetro: {data.attributes.voltmeter}
           </Text>
         </VStack>
       </Center>

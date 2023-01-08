@@ -43,6 +43,13 @@ export default StyleSheet.create({
   },
   listItem: {
     flexDirection: 'column',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 10
+    },
+    shadowOpacity: .3,
+    shadowRadius: 20,
   },
   card: {
     alignItems: 'center',

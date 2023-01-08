@@ -10,10 +10,10 @@ export function More() {
   const { signOut } = useAuth();
   return (
     <>
-      <View alignItems='center' mt='1/2'>
+      <View alignItems='center' mt='20'>
         <LogoSvg width={120} />
       </View>
-      <View mt='auto' alignItems='center'>
+      <View mt='20' alignItems='center'>
 
         <List borderColor='transparent' mb='16'>
           <List.Item mb='8'
@@ -21,7 +21,7 @@ export function More() {
               Linking.openURL('https://locator.tlbt.pt/terms.html');
             }}
           >
-            <Text color='white'>
+            <Text color='#fff'>
               Termos de Utilização
             </Text>
           </List.Item>
@@ -31,14 +31,14 @@ export function More() {
               Linking.openURL('https://locator.tlbt.pt/policy.html');
             }}
           >
-            <Text color='white'>
+            <Text color='#fff'>
               Política de Privacidade
             </Text>
           </List.Item>
 
           <VStack ml='-6'>
             <List.Item position='absolute' >
-              <Text color='white' ml='8'>
+              <Text color='#fff' ml='8'>
                 Sair
               </Text>
             </List.Item>

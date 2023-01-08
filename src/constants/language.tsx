@@ -1,5 +1,5 @@
 
-export function get(code: string, languageCode: 'pt' | 'en' = 'pt'): string {
+export function Language(code: string, languageCode: 'pt' | 'en' = 'pt'): string {
   const pt: { [key: string]: string } = {
     _fileSuffix: '_pt',
     account: 'Conta',

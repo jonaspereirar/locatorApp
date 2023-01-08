@@ -13,19 +13,18 @@ import { VehicleDetailsStopsDTO } from '@dtos/VehicleDetailsStopsDTO';
 import { VehiclesDTO } from '../dtos/vehiclesDTO';
 import { Loading } from '@components/Loading';
 import { Header } from '@components/Header';
+import { PositionsDTO } from '@dtos/PositionsDTO';
 
 interface Params {
   vehicle: VehiclesDTO;
+  position: PositionsDTO
   selectedDayMoment?: moment.Moment;
   momentDate?: moment.Moment;
 }
 export interface NavigationProps {
   navigate: (
     screen: string,
-    param: {
-      vehicle: VehiclesDTO
-    }
-  ) => void
+    param: Params) => void
 }
 
 export function VehicleDetailsStops() {
@@ -36,7 +35,7 @@ export function VehicleDetailsStops() {
   const navigation = useNavigation<NavigationProps>();
 
   const route = useRoute();
-  const { vehicle } = route.params as Params;
+  const { vehicle, position } = route.params as Params;
 
   useEffect(() => {
     fetchDailyStops(vehicle);
@@ -62,13 +61,13 @@ export function VehicleDetailsStops() {
       setLoading(false);
     }
   };
-  function handleVehicleDetails(vehicle: VehiclesDTO) {
-    navigation.navigate('VehicleDetails', { vehicle })
+  function handleVehicleDetails({ vehicle, position }: Params) {
+    navigation.navigate('VehicleDetails', { vehicle, position })
   }
 
   return (
     <NativeBaseProvider theme={extendTheme(v3CompatibleTheme)}>
-      <Header name={vehicle.name} onPress={() => handleVehicleDetails(vehicle)} />
+      <Header name={vehicle.name} onPress={() => handleVehicleDetails({ vehicle, position })} />
       <CalendarStrip
         daySelectionAnimation={
           {
@@ -92,7 +91,7 @@ export function VehicleDetailsStops() {
         selectedDate={selectedDate}
       />
       <VStack>
-        <View mt='1' mb={height / 6}>
+        <View mt='1' mb={height / 5}>
           {loading ? <Loading /> : (
             <FlatList
               data={stops}
@@ -104,13 +103,14 @@ export function VehicleDetailsStops() {
                 <Box
                   bg='white'
                   borderRadius='10'
-                  borderBottomWidth="12"
-                  borderColor="coolGray.500"
+                  borderBottomWidth="10"
+                  borderColor="#a59999"
                   shadow='2'
                   p='15'
                   pl="4"
                   pr="5"
                   py="2"
+                  mb='2'
                 >
                   <HStack>
                     <MaterialCommunityIcons name='map-marker-outline' size={20} color='#464444' />
@@ -125,11 +125,11 @@ export function VehicleDetailsStops() {
                         {' '}
                         {constants.getFormattedDateFromIsoString(item.startTime)}
                         {' '}
-                        <Text color='white'>até</Text>
+                        <Text color='#464444'>até</Text>
                         {' '}
                         {constants.getFormattedDateFromIsoString(item.endTime)}
                       </Text>
-                      <Text color='white' >
+                      <Text color='#464444' >
                         Duração:
                         {' '}
                         {constants.getMillisecondsFormattedHms(item.duration)}

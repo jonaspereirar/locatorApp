@@ -1,6 +1,5 @@
 import { useTheme, Box, Image, View } from 'native-base'
 import { DefaultTheme, NavigationContainer } from "@react-navigation/native";
-import PropTypes from 'prop-types';
 
 import { Loading } from '@components/Loading';
 import { AuthRoutes } from "./auth.routes";
@@ -15,7 +14,7 @@ export default function Routes() {
 
 
   const theme = DefaultTheme;
-  theme.colors.background = colors.gray[200]
+  theme.colors.background = colors.green[900]
 
   if (isLoadingUserStorageData) {
     return <Loading />

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import MapView from 'react-native-maps';
 import { Fab, Icon, NativeBaseProvider, Text, extendTheme, v3CompatibleTheme } from 'native-base';
 import { View, Dimensions } from 'react-native';
@@ -6,12 +6,14 @@ import { MaterialIcons, MaterialCommunityIcons } from '@expo/vector-icons';
 import axios from 'axios';
 import 'moment/locale/pt';
 
+import { useWebSocket } from '../../components/WebSocket';
 import { MapMarker } from '../../components/MapMarker';
 import { ModalInfoBox } from '@components/ModalInfoBox';
 
 import { PositionsDTO, DeviceDTO } from '../../dtos';
 import * as constants from '../../constants/constants';
 import { useAuth } from '@hooks/useAuth';
+import { useFocusEffect } from '@react-navigation/native';
 
 interface IRegion {
   latitude: number;
@@ -40,6 +42,8 @@ type MapTypes =
   | 'mutedStandard';
 
 export function Map() {
+  const { webSocket } = useWebSocket() || {};
+  const mapRef = useRef<MapView>(null);
   const [deviceModal, setDeviceModal] = useState({ name: '', lastUpdate: '' });
   const [positionModal, setPositionModal] = useState({
     address: '',
@@ -54,14 +58,21 @@ export function Map() {
   const [manualZoom, setManualZoom] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [region, setRegion] = useState<IRegion>({
-    latitude: calculateAverageCoordinates(position).latitude || 38.76825,
-    longitude: calculateAverageCoordinates(position).longitude || -9.4324,
-    latitudeDelta: 0.0322,
-    longitudeDelta: 0.0421,
+    latitude: calculateAverageCoordinates(position).latitude || 39.5501,
+    longitude: calculateAverageCoordinates(position).longitude || -8.0969,
+    latitudeDelta: 7.5,
+    longitudeDelta: 7.5,
   });
 
 
   const { user } = useAuth();
+
+  useFocusEffect(
+    useCallback(() => {
+      // Fecha o WebSocket quando a tela atual perde o foco (é escondida)
+      return () => webSocket?.close();
+    }, [webSocket])
+  );
 
   useEffect(() => {
     // Atualiza o estado deviceModal a cada 30 segundos
@@ -89,7 +100,29 @@ export function Map() {
     return () => clearInterval(interval);
   }, [])
 
+
+  function focusAllVehicles() {
+    const avgCoordinates = calculateAverageCoordinates(position);
+    const newRegion = {
+      latitude: avgCoordinates.latitude,
+      longitude: avgCoordinates.longitude,
+      latitudeDelta: 0.0322,
+      longitudeDelta: 0.0421,
+    };
+
+    setRegion(newRegion);
+    mapRef.current?.animateToRegion(newRegion, 500);
+    setManualZoom(false);
+  }
+
   function calculateAverageCoordinates(vehicles: PositionsDTO[]) {
+    if (!vehicles || vehicles.length === 0) {
+      return {
+        latitude: 39.5501,
+        longitude: -8.0969,
+      };
+    }
+
     let sumLat = 0;
     let sumLng = 0;
 
@@ -107,56 +140,44 @@ export function Map() {
   }
 
   async function loadListVehicles() {
-    try {
-      const res = await axios.get(`${constants.API_BASE_URL}/api/devices?userId=${user.id}`)
-      setDevice(res.data);
-    } catch (error) {
-      console.log(error)
-    } finally {
-      setLoading(false)
+    if (position) {
+      try {
+        const res = await axios.get(`${constants.API_BASE_URL}/api/devices?userId=${user.id}`)
+        setDevice(res.data);
+      } catch (error) {
+        console.log(error)
+      } finally {
+        setLoading(false)
+      }
     }
   }
 
   async function loadPositions() {
-    try {
-      const res = await axios.get(`${constants.API_BASE_URL}/api/positions`)
-      setPosition(res.data)
-    } catch (error) {
-      console.log(error)
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  function focusAllVehicles() {
-    if (position.length > 0) {
-      let minLat = position[0].latitude;
-      let maxLat = position[0].latitude;
-      let minLng = position[0].longitude;
-      let maxLng = position[0].longitude;
-
-      for (const pos of position) {
-        minLat = Math.min(minLat, pos.latitude);
-        maxLat = Math.max(maxLat, pos.latitude);
-        minLng = Math.min(minLng, pos.longitude);
-        maxLng = Math.max(maxLng, pos.longitude);
+    if (position) {
+      try {
+        const res = await axios.get(`${constants.API_BASE_URL}/api/positions`)
+        setPosition(res.data)
+      } catch (error) {
+        console.log(error)
+      } finally {
+        setLoading(false)
       }
-
-      // Aumenta o valor dos deltas em 50%
-      const latitudeDelta = 1.5 * (maxLat - minLat);
-      const longitudeDelta = 1.5 * (maxLng - minLng);
-
-      setRegion({
-        latitude: (maxLat + minLat) / 2,
-        longitude: (maxLng + minLng) / 2,
-        latitudeDelta,
-        longitudeDelta,
-      });
-      setManualZoom(false);
     }
   }
 
+  const coordinates = position.map((p) => ({
+    latitude: p.latitude,
+    longitude: p.longitude,
 
+  }));
+
+  if (!manualZoom) {
+    mapRef.current?.fitToCoordinates(coordinates, {
+      edgePadding: { top: 100, right: 100, bottom: 100, left: 100 },
+      animated: true,
+    });
+    setManualZoom(true)
+  }
 
   function reposition(
     coordinate: { latitude: number; longitude: number },
@@ -166,8 +187,8 @@ export function Map() {
     setRegion({
       latitude: coordinate.latitude,
       longitude: coordinate.longitude,
-      latitudeDelta: 0.0322,
-      longitudeDelta: 0.0421,
+      latitudeDelta: 7.5,
+      longitudeDelta: 7.5,
     });
 
     setShowModal(!showModal);
@@ -175,11 +196,11 @@ export function Map() {
     setPositionModal(data);
   }
   const onMapReady = () => {
-    if (mapRef) {
-      mapRef.fitToElements();
+    if (mapRef.current) {
+      mapRef.current.fitToElements();
     }
   };
-  let mapRef: MapView | null = null;
+
 
   function onButtonTrafficClick() {
     setShowsTraffic(!showsTraffic)
@@ -196,19 +217,42 @@ export function Map() {
     setMapType(newMapType);
   };
 
+  useEffect(() => {
+    if (webSocket) {
+      webSocket.onopen = () => {
+        webSocket.send('WebSocket foi aberto');
+      };
+
+      webSocket.onclose = () => {
+        console.log('WebSocket foi fechado');
+      };
+
+      webSocket.onmessage = (event) => {
+        console.log(event.data);
+        // processar a mensagem aqui
+      };
+
+      return () => {
+        webSocket.close();
+      };
+    }
+  }, [webSocket]);
+
   return (
     <NativeBaseProvider
       theme={extendTheme(v3CompatibleTheme)}
     >
       <View style={{ flex: 1 }}>
         <MapView
-          ref={ref => (mapRef = ref)}
+          ref={mapRef}
           style={{ flex: 1 }}
+          initialRegion={region}
           onMapReady={onMapReady}
           region={manualZoom ? undefined : region}
           onRegionChangeComplete={(region) => setManualZoom(true)}
           showsTraffic={showsTraffic}
           mapType={mapType}
+          pitchEnabled={true}
         >
 
           {position.map((item, index) => (

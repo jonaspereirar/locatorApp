@@ -1,9 +1,9 @@
 import { createContext, ReactNode, useEffect, useState } from "react";
 
 import { storageUserGet, storageUserRemove, storageUserSave } from '@storage/storageUser';
-import { AuthContextDataProps } from "src/types";
+import { AuthContextDataProps } from "../dtos/UserDTO";
 
-import { UserDTO } from "../types";
+import { UserDTO } from "../dtos/UserDTO";
 
 type AuthContextProviderProps = {
   children: ReactNode;
@@ -72,7 +72,7 @@ export function AuthContextProvider({ children }: AuthContextProviderProps) {
       user,
       singIn,
       signOut,
-      isLoadingUserStorageData,
+      isLoadingUserStorageData
     }}>
       {children}
     </AuthContext.Provider>

@@ -2,7 +2,6 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import MapView, { Marker } from 'react-native-maps';
 import { Box, Heading, HStack, Text, View, VStack, Pressable, FlatList } from 'native-base'
 
-import { VehiclesDTO } from '@dtos/vehiclesDTO';
 import { useEffect, useState } from 'react';
 import { CardInfoVehicle } from '@components/CardInfoVehicle';
 import { CardInfoHome } from '@components/CardInfoHome';
@@ -10,27 +9,28 @@ import { ReportButton } from '../components/ReportButton'
 import { Header } from '@components/Header';
 import moment from 'moment';
 import { PositionsDTO } from '@dtos/PositionsDTO';
+import { DeviceDTO } from '@dtos/deviceDTO';
 
 interface Params {
-  vehicle: VehiclesDTO;
+  vehicle: DeviceDTO
+  position: PositionsDTO
 }
+
 export interface NavigationProps {
   navigate: (
     screen: string,
-    param: Params,
-  ) => void
+    param: Params) => void
 }
 
 export function VehicleDetails() {
   const [lastUpdate, setLastUpdate] = useState('');
-  const [position, setPosition] = useState<PositionsDTO>({ latitude: 0, longitude: 0 } as PositionsDTO);
   const navigation = useNavigation<NavigationProps>();
   const [cards, setCards] = useState([1])
 
-  const rpm = { attributes: {} };
+
 
   const route = useRoute();
-  const { vehicle } = route.params as Params;
+  const { vehicle, position } = route.params as Params;
 
   useEffect(() => {
     const pastDate = moment(vehicle.lastUpdate);
@@ -48,22 +48,35 @@ export function VehicleDetails() {
   }, [vehicle.lastUpdate]);
 
 
-  function handleVehicleDetailsStops(vehicle: VehiclesDTO) {
-    navigation.navigate('VehicleDetailsStops', { vehicle })
+  function handleVehicleDetailsStops({ vehicle, position }: Params) {
+    navigation.navigate('VehicleDetailsStops', { vehicle, position })
   }
 
-  function VehicleDetailsTrips(vehicle: VehiclesDTO) {
-    navigation.navigate('VehicleDetailsTrips', { vehicle })
+  function VehicleDetailsTrips({ vehicle, position }: Params) {
+    navigation.navigate('VehicleDetailsTrips', { vehicle, position })
   }
-  function handleVehicleDetails(vehicle: VehiclesDTO) {
-    navigation.navigate('Veículos', { vehicle })
+  function handleVehicleList({ vehicle, position }: Params) {
+    navigation.navigate('VehicleList', { vehicle, position })
   }
+  function handleVehicleEvents({ vehicle, position }: Params) {
+    navigation.navigate('VehicleEvents', { vehicle, position })
+  }
+
+  function handleSmsNotifications({ vehicle, position }: Params) {
+    navigation.navigate('SmsNotifications', { vehicle, position })
+  }
+
+  const parseIgnition = (ignitionValue: boolean) => {
+    if (ignitionValue) {
+      return 'Ligada';
+    }
+    return 'Desligada';
+  };
 
   return (
 
     <VStack flex={1} >
-      <Header name={vehicle.name} onPress={() => handleVehicleDetails(vehicle)} />
-
+      <Header name={vehicle.name} onPress={() => handleVehicleList({ vehicle, position } as Params)} />
       <Pressable
         backgroundColor='blue.300'
         _pressed={{
@@ -99,9 +112,9 @@ export function VehicleDetails() {
             </Heading>
             <Text color='gray.100' fontSize='md' >
               Veiculo: {vehicle.category}{'\n'}
-              Marca: {vehicle.attributes.brand}{'\n'}
+              Marca: {vehicle.model}{'\n'}
               Modelo: {vehicle.model}{'\n'}
-              Vim: {vehicle.attributes.vin}
+              Vim: {vehicle.vim}
             </Text>
           </Box>
         </HStack>
@@ -119,7 +132,9 @@ export function VehicleDetails() {
           borderWidth: 2
         }} >
         <Box mt={3} mb={3} >
-          <Heading color='gray.100' fontSize='sm'>
+          <Heading color='gray.100' fontSize='sm'
+            onPress={() => handleSmsNotifications({ vehicle, position })}
+          >
             Não há notificações
           </Heading>
         </Box>
@@ -131,25 +146,26 @@ export function VehicleDetails() {
         renderItem={({ item }) => (
           <>
             <CardInfoHome
-              speed={vehicle.attributes.speedLimit}
-              lastUpdate={lastUpdate}
-
-              address={vehicle.name}
-              status={vehicle.status}
               data={{
-                ignition: true,
-                speed: 2323,
-                voltmeter: 1233,
+                speed: position.speed,
+                lastUpdate: lastUpdate,
+                address: vehicle.name,
+                status: vehicle.status,
+                attributes: {
+                  ignition: Boolean(position.attributes.ignition ? 'Ligada' : 'Desligada'),
+                  voltmeter: Math.round((vehicle.attributes.io114 * 5) / 1000)
+                }
+
               }}
 
             />
             <CardInfoVehicle
               data={{
-                distance: 23234,
-                engineTemperature: 3434,
-                fuel: 453,
-                Odometro: 3454,
-                rpm: 345
+                distance: position.attributes.distance,
+                engineTemperature: vehicle.attributes.io115,
+                fuel: vehicle.attributes.io207,
+                Odometro: vehicle.attributes.io114 * 5,
+                rpm: vehicle.attributes.rpm
               }}
             />
           </>
@@ -161,18 +177,18 @@ export function VehicleDetails() {
         _contentContainerStyle={{ px: 1 }}
       />
       <Box mt={1} ml='4'>
-        <Heading color='gray.800' fontSize='md'>
+        <Heading color='white' fontSize='md'>
           Relatorios
         </Heading>
       </Box>
       <HStack ml='auto' mr='auto'>
         <VStack mb='4' flexDirection='column' ml='4' mr='4'>
-          <ReportButton onPress={() => handleVehicleDetailsStops(vehicle)} iconColor='green.400' color='white' title="Viagens" mt={3} />
-          <ReportButton iconColor='blue.500' color='white' title="Eventos" mt={3} />
+          <ReportButton onPress={() => handleVehicleDetailsStops({ vehicle, position })} iconColor='green.400' color='white' title="Viagens" mt={3} />
+          <ReportButton onPress={() => handleVehicleEvents({ vehicle, position })} iconColor='blue.500' color='white' title="Eventos" mt={3} />
         </VStack>
         <VStack mb='4' flexDirection='column' ml='4' mr='4'>
-          <ReportButton onPress={() => VehicleDetailsTrips(vehicle)} iconColor='sunglow.100' color='white' title="Paragens" mt={3} />
-          <ReportButton iconColor='green.400' color='white' title="Paragens" mt={3} />
+          <ReportButton onPress={() => VehicleDetailsTrips({ vehicle, position })} iconColor='sunglow.100' color='white' title="Paragens" mt={3} />
+          <ReportButton iconColor='green.400' color='white' title="Rotas" mt={3} />
         </VStack>
       </HStack>
     </VStack>

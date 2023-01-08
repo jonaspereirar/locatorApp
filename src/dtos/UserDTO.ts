@@ -1,3 +1,4 @@
+import { PositionsDTO } from "@dtos/PositionsDTO";
 import { VehiclesDTO } from "@dtos/vehiclesDTO";
 
 export type UserDTO = {
@@ -5,6 +6,7 @@ export type UserDTO = {
   name: string;
   email: string;
   vehicles: VehiclesDTO;
+  position: PositionsDTO;
 }
 
 export interface ISignInCredencials {

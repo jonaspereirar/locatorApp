@@ -1,35 +1,55 @@
 import { useState, useEffect } from 'react'
-import { useNavigation } from '@react-navigation/native';
-import { FlatList, View } from 'native-base'
+import { BottomTabNavigationProp, createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { useNavigation, useRoute } from '@react-navigation/native';
+import { Button, FlatList, View } from 'native-base'
 import axios from 'axios';
 
-import { DeviceDTO } from '../../dtos';
+import { HeaderIcon } from '@components/HeaderIcon';
+import { DeviceDTO, PositionsDTO } from '../../dtos';
 import { Loading } from '../../components/Loading';
 import { useAuth } from '@hooks/useAuth';
 
 import { GroupVehicleButton } from '@components/GroupVehicleButton';
 import * as constants from '../../constants/constants';
+import { MapProps } from './Map';
+
+interface Params {
+  vehicle: DeviceDTO
+  position: PositionsDTO
+}
 
 export interface NavigationProps {
   navigate: (
     screen: string,
-    param: {
-      vehicle: DeviceDTO
-    }
-  ) => void
+    param: Params) => void
+}
+type AppRoutes = {
+  VehicleList: undefined;
+  Mapa: MapProps | undefined;
+  Mais: undefined;
+  VehicleDetails: undefined;
+  VehicleDetailsStops: undefined;
+  VehicleDetailsTrips: undefined
+  VehicleEvents: undefined;
+  SmsNotifications: undefined;
 }
 
+export type AppNavigatorRoutesProps = BottomTabNavigationProp<AppRoutes>
+
 export function VehicleList() {
+  const navigation = useNavigation<NavigationProps>();
+  const route = useRoute();
   const [loading, setLoading] = useState(true)
   const [vehicles, setVehicles] = useState<DeviceDTO[]>([]);
+  const [positions, setPositions] = useState<PositionsDTO[]>([])
   const [groupSelected, setGroupSelected] = useState('')
 
   const { user } = useAuth();
 
-  const navigation = useNavigation<NavigationProps>();
 
-  function handleVehicleDetails(vehicle: DeviceDTO) {
-    navigation.navigate('VehicleDetails', { vehicle })
+
+  function handleVehicleDetails({ vehicle, position }: Params) {
+    navigation.navigate('VehicleDetails', { vehicle, position })
   }
 
   useEffect(() => {
@@ -46,38 +66,56 @@ export function VehicleList() {
     loadListVehicles();
   }, [])
 
-  return (
-    <View backgroundColor='transparent' mt='32'>
-      {loading ? <Loading /> :
-        <FlatList
-          bounces={false}
-          key='item'
-          data={vehicles}
-          keyExtractor={item => String(item.id)}
-          renderItem={({ item }) =>
-            <GroupVehicleButton
-              speed={item.speed}
-              size={8}
-              color={item.color}
-              name={item.name}
-              address={item.address}
-              rpm={item.rpm}
-              status={item.status}
-              isActive={groupSelected.toLocaleUpperCase() === item.name.toLocaleUpperCase()}
-              onPress={() => handleVehicleDetails(item)}
-            />
-          }
 
-          showsVerticalScrollIndicator={false}
-          _contentContainerStyle={{
-            px: 4,
-            pb: 20,
-            backgroundColor: 'transparent',
-          }}
-          mb={10}
-        />
-
+  useEffect(() => {
+    async function loadPositions() {
+      try {
+        const res = await axios.get(`${constants.API_BASE_URL}/api/positions`)
+        setPositions(res.data)
+      } catch (error) {
+        console.log(error)
+      } finally {
+        setLoading(false)
       }
+    }
+    loadPositions()
+  }, [])
+
+  return (
+    <View backgroundColor='transparent' mt='8'>
+      <HeaderIcon />
+      <FlatList
+        bounces={false}
+        data={positions}
+        key={'positions'}
+        keyExtractor={(devices, index) => String(index)}
+        renderItem={({ item, index }) => (
+          <GroupVehicleButton
+            device={{
+              speed: item.speed,
+              name: `${vehicles.find((el) => el.id === item.deviceId)?.name}`,
+              address: item.address,
+              rpm: item.attributes.rpm,
+              status: `${vehicles.find((el) => el.id === item.deviceId)?.status}`,
+              isActive: item.attributes.ignition,
+            }}
+            onPress={() => {
+              const foundVehicle = vehicles.find((el) => el.id === item.deviceId);
+              if (foundVehicle) {
+                handleVehicleDetails({ vehicle: foundVehicle, position: item });
+              }
+            }}
+          />
+        )}
+        showsVerticalScrollIndicator={false}
+        _contentContainerStyle={{
+          px: 4,
+          pb: 20,
+          backgroundColor: 'transparent',
+        }}
+        mb={10}
+      />
+
     </View>
   )
 }
