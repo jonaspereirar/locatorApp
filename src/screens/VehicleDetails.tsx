@@ -2,7 +2,7 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import MapView, { Marker } from 'react-native-maps';
 import { Box, Heading, HStack, Text, View, VStack, Pressable, FlatList } from 'native-base'
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { CardInfoVehicle } from '@components/CardInfoVehicle';
 import { CardInfoHome } from '@components/CardInfoHome';
 import { ReportButton } from '../components/ReportButton'
@@ -10,6 +10,8 @@ import { Header } from '@components/Header';
 import moment from 'moment';
 import { PositionsDTO } from '@dtos/PositionsDTO';
 import { DeviceDTO } from '@dtos/deviceDTO';
+import MapMarker from '@components/MapMarker';
+import { Dimensions } from 'react-native';
 
 interface Params {
   vehicle: DeviceDTO
@@ -22,29 +24,42 @@ export interface NavigationProps {
     param: Params) => void
 }
 
+interface IRegion {
+  latitude: number;
+  longitude: number;
+  latitudeDelta: number;
+  longitudeDelta: number;
+}
+
 export function VehicleDetails() {
+  const mapRef = useRef<MapView>(null);
+  const { width, height } = Dimensions.get('window');
+  const [showModal, setShowModal] = useState(false);
   const [lastUpdate, setLastUpdate] = useState('');
   const navigation = useNavigation<NavigationProps>();
+  const [deviceModal, setDeviceModal] = useState({ name: '', lastUpdate: '' });
+  const [positionModal, setPositionModal] = useState({
+    address: '',
+    speed: 0, attributes: { ignition: true }
+  });
   const [cards, setCards] = useState([1])
-
-
+  const [region, setRegion] = useState<IRegion>({
+    latitude: 39.5501,
+    longitude: -8.0969,
+    latitudeDelta: 7.5,
+    longitudeDelta: 7.5,
+  });
 
   const route = useRoute();
   const { vehicle, position } = route.params as Params;
 
   useEffect(() => {
-    const pastDate = moment(vehicle.lastUpdate);
-    const currentDate = moment();
-    const difference = currentDate.diff(pastDate, 'minutes');
+    const interval = setInterval(() => {
 
-    if (difference < 60) {
-      const minutes = moment.duration(difference, 'minutes').minutes();
-      setLastUpdate(`há ${minutes} minutos`);
-    } else {
-      const hours = moment.duration(difference, 'minutes').hours();
-      const minutes = moment.duration(difference, 'minutes').minutes();
-      setLastUpdate(`há ${hours} horas e ${minutes} minutos`);
-    }
+      parseIgnition(position.attributes.ignition)
+      upDateTime()
+    }, 3000);
+    return () => clearInterval(interval);
   }, [vehicle.lastUpdate]);
 
 
@@ -61,16 +76,56 @@ export function VehicleDetails() {
   function handleVehicleEvents({ vehicle, position }: Params) {
     navigation.navigate('VehicleEvents', { vehicle, position })
   }
+  function handleMapRouteDay({ vehicle, position }: Params) {
+    navigation.navigate('MapRouteDay', { vehicle, position })
+  }
 
   function handleSmsNotifications({ vehicle, position }: Params) {
     navigation.navigate('SmsNotifications', { vehicle, position })
   }
 
-  const parseIgnition = (ignitionValue: boolean) => {
+  function parseIgnition(ignitionValue: boolean) {
     if (ignitionValue) {
       return 'Ligada';
     }
     return 'Desligada';
+  };
+
+  function upDateTime() {
+    const pastDate = moment(vehicle.lastUpdate);
+    const currentDate = moment();
+    const difference = currentDate.diff(pastDate, 'minutes');
+
+    if (difference < 60) {
+      const minutes = moment.duration(difference, 'minutes').minutes();
+      setLastUpdate(`há ${minutes} minutos`);
+    } else {
+      const hours = moment.duration(difference, 'minutes').hours();
+      const minutes = moment.duration(difference, 'minutes').minutes();
+      setLastUpdate(`há ${hours} horas e ${minutes} minutos`);
+    }
+  }
+
+  function reposition(
+    coordinate: { latitude: number; longitude: number },
+    device: { name: string, lastUpdate: string },
+    data: { address: string; speed: number; attributes: { ignition: boolean } },
+    showModal: boolean) {
+    setRegion({
+      latitude: coordinate.latitude,
+      longitude: coordinate.longitude,
+      latitudeDelta: 7.5,
+      longitudeDelta: 7.5,
+    });
+
+    setShowModal(!showModal);
+    setDeviceModal({ ...device, lastUpdate: device.lastUpdate });
+    setPositionModal(data);
+  }
+  const onMapReady = () => {
+    if (mapRef.current) {
+      mapRef.current.fitToElements();
+    }
   };
 
   return (
@@ -87,21 +142,37 @@ export function VehicleDetails() {
         <HStack rounded='md' justifyContent='space-around' mb={3} mt={1}>
           <View flex={1} flexDirection='column' mt={2} mb={1} ml={3} mr={5} size={48}>
             <MapView
-              ref={(ref) => {
-
-              }}
+              ref={mapRef}
               style={{ flex: 1, minHeight: 100, minWidth: '100%' }}
-              initialRegion={{
-                latitude: 38.76825,
-                longitude: -9.4324,
-                latitudeDelta: 0.0322,
-                longitudeDelta: 0.0421,
-              }}
-              provider="google"
+              initialRegion={region}
+              onMapReady={onMapReady}
             >
               {position.latitude !== 0 && (
-                <Marker
-                  coordinate={{ latitude: position.latitude, longitude: position.longitude }}
+                <MapMarker
+                  reposition={() => reposition(
+                    { latitude: position.latitude, longitude: position.longitude },
+                    {
+                      name: vehicle.name,
+                      lastUpdate: vehicle.lastUpdate,
+                    },
+                    {
+                      address: position.address,
+                      speed: position.speed,
+                      attributes: position.attributes,
+                    },
+                    showModal
+                  )}
+                  device={vehicle}
+                  showModal={showModal}
+                  width={width}
+                  height={height}
+                  position={{
+                    latitude: position.latitude,
+                    longitude: position.longitude,
+                    course: position.course,
+                    speed: position.speed,
+                    rpm: position.attributes.rpm,
+                  }}
                 />
               )}
             </MapView>
@@ -146,26 +217,29 @@ export function VehicleDetails() {
         renderItem={({ item }) => (
           <>
             <CardInfoHome
-              data={{
+              position={{
+                address: position.address,
                 speed: position.speed,
-                lastUpdate: lastUpdate,
-                address: vehicle.name,
-                status: vehicle.status,
-                attributes: {
-                  ignition: Boolean(position.attributes.ignition ? 'Ligada' : 'Desligada'),
-                  voltmeter: Math.round((vehicle.attributes.io114 * 5) / 1000)
-                }
 
+                attributes: {
+                  ignition: parseIgnition(position.attributes.ignition),
+                  power: position.attributes.power / 1000
+                },
               }}
+              vehicle={{
+                lastUpdate: lastUpdate,
+                name: vehicle.name,
+                status: vehicle.status,
+              }}
+
 
             />
             <CardInfoVehicle
               data={{
-                distance: position.attributes.distance,
-                engineTemperature: vehicle.attributes.io115,
-                fuel: vehicle.attributes.io207,
-                Odometro: vehicle.attributes.io114 * 5,
-                rpm: vehicle.attributes.rpm
+                rpm: position.attributes.rpm,
+                engineTemperature: position.attributes.io115 - 40,
+                fuel: Math.round(position.attributes.io207 * 0.4),
+                Odometro: Math.round((position.attributes.io114 * 5) / 1000),
               }}
             />
           </>
@@ -188,7 +262,7 @@ export function VehicleDetails() {
         </VStack>
         <VStack mb='4' flexDirection='column' ml='4' mr='4'>
           <ReportButton onPress={() => VehicleDetailsTrips({ vehicle, position })} iconColor='sunglow.100' color='white' title="Paragens" mt={3} />
-          <ReportButton iconColor='green.400' color='white' title="Rotas" mt={3} />
+          <ReportButton onPress={() => handleMapRouteDay({ vehicle, position })} iconColor='green.400' color='white' title="Rotas" mt={3} />
         </VStack>
       </HStack>
     </VStack>

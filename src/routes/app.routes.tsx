@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React from "react";
 import { createBottomTabNavigator, BottomTabNavigationProp } from "@react-navigation/bottom-tabs";
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTheme } from "native-base";
@@ -11,10 +11,16 @@ import { VehicleDetailsTrips } from '@screens/VehicleDetailsTrips';
 import { VehicleEvents } from '@screens/VehicleEvents';
 import { SmsNotifications } from "@screens/SmsNotifications";
 import { VehiclesDTO } from "@dtos/vehiclesDTO";
+import { MapRoute } from "@screens/MapRoute";
+import { MapRouteDay } from "@screens/MapRouteDay";
 
-
+interface MapRouteParams {
+  routeCoordinates: Array<{ latitude: number, longitude: number }>;
+}
 
 type AppRoutes = {
+  MapRouteDay: MapRouteParams | undefined;
+  MapRoute: MapRouteParams | undefined;
   VehicleList: VehiclesDTO | undefined;
   Mapa: MapProps | undefined;
   Mais: undefined;
@@ -116,6 +122,16 @@ export function AppRoutes() {
       <App.Screen
         name="SmsNotifications"
         component={SmsNotifications}
+        options={{ tabBarButton: () => null, tabBarStyle: { display: 'none' } }}
+      />
+      <App.Screen
+        name="MapRoute"
+        component={MapRoute}
+        options={{ tabBarButton: () => null, tabBarStyle: { display: 'none' } }}
+      />
+      <App.Screen
+        name="MapRouteDay"
+        component={MapRouteDay}
         options={{ tabBarButton: () => null, tabBarStyle: { display: 'none' } }}
       />
     </App.Navigator>

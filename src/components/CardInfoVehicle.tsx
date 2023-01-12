@@ -6,7 +6,6 @@ interface Props {
     rpm: number
     engineTemperature: number
     fuel: number
-    distance: number
     Odometro: number
   }
 }
@@ -38,7 +37,7 @@ export function CardInfoVehicle({ data, ...rest }: Props) {
             Rotações do motor: {data.rpm}{'\n'}
             Temperatura refrigerante do motor: {data.engineTemperature}{'\n'}
             Nível de combustível: {data.fuel}{'\n'}
-            Odómetro: {data.distance}
+            Odómetro: {data.Odometro}
           </Text>
         </VStack>
       </Center>

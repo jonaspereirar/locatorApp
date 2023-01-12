@@ -42,11 +42,8 @@ export function VehicleList() {
   const [loading, setLoading] = useState(true)
   const [vehicles, setVehicles] = useState<DeviceDTO[]>([]);
   const [positions, setPositions] = useState<PositionsDTO[]>([])
-  const [groupSelected, setGroupSelected] = useState('')
 
   const { user } = useAuth();
-
-
 
   function handleVehicleDetails({ vehicle, position }: Params) {
     navigation.navigate('VehicleDetails', { vehicle, position })
@@ -84,38 +81,39 @@ export function VehicleList() {
   return (
     <View backgroundColor='transparent' mt='8'>
       <HeaderIcon />
-      <FlatList
-        bounces={false}
-        data={positions}
-        key={'positions'}
-        keyExtractor={(devices, index) => String(index)}
-        renderItem={({ item, index }) => (
-          <GroupVehicleButton
-            device={{
-              speed: item.speed,
-              name: `${vehicles.find((el) => el.id === item.deviceId)?.name}`,
-              address: item.address,
-              rpm: item.attributes.rpm,
-              status: `${vehicles.find((el) => el.id === item.deviceId)?.status}`,
-              isActive: item.attributes.ignition,
-            }}
-            onPress={() => {
-              const foundVehicle = vehicles.find((el) => el.id === item.deviceId);
-              if (foundVehicle) {
-                handleVehicleDetails({ vehicle: foundVehicle, position: item });
-              }
-            }}
-          />
-        )}
-        showsVerticalScrollIndicator={false}
-        _contentContainerStyle={{
-          px: 4,
-          pb: 20,
-          backgroundColor: 'transparent',
-        }}
-        mb={10}
-      />
-
+      {loading ? <Loading /> : (
+        <FlatList
+          bounces={false}
+          data={positions}
+          key={'positions'}
+          keyExtractor={(devices, index) => String(index)}
+          renderItem={({ item, index }) => (
+            <GroupVehicleButton
+              device={{
+                speed: item.speed,
+                name: `${vehicles.find((el) => el.id === item.deviceId)?.name}`,
+                address: item.address,
+                rpm: item.attributes.rpm,
+                status: `${vehicles.find((el) => el.id === item.deviceId)?.status}`,
+                isActive: item.attributes.ignition,
+              }}
+              onPress={() => {
+                const foundVehicle = vehicles.find((el) => el.id === item.deviceId);
+                if (foundVehicle) {
+                  handleVehicleDetails({ vehicle: foundVehicle, position: item });
+                }
+              }}
+            />
+          )}
+          showsVerticalScrollIndicator={false}
+          _contentContainerStyle={{
+            px: 4,
+            pb: 20,
+            backgroundColor: 'transparent',
+          }}
+          mb={10}
+        />
+      )}
     </View>
   )
 }

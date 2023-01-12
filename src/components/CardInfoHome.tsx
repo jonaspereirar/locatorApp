@@ -1,22 +1,27 @@
 import { Dimensions } from 'react-native'
 import { HStack, VStack, Center, Text } from 'native-base'
+import { PositionsDTO } from '@dtos/PositionsDTO'
+import { VehiclesDTO } from '@dtos/vehiclesDTO'
 
 interface Props {
 
-  data: {
-    address: string
-    lastUpdate: string
-    status: string
-    speed: number
+  position: {
+    address: string,
+    speed: number;
     attributes: {
-      ignition: boolean
-      voltmeter: number
+      ignition: string,
+      power: number
     }
-  }
+  };
+  vehicle: {
+    name: string;
+    status: string,
+    lastUpdate: string;
+  };
 }
 
 export function CardInfoHome({
-  data, ...rest }: Props) {
+  position, vehicle, ...rest }: Props) {
   const { width } = Dimensions.get('window')
 
   return (
@@ -35,19 +40,19 @@ export function CardInfoHome({
         >
           <VStack>
             <Text color="white" fontSize='sm' mb='1'>
-              Velocidade: {data.speed}
+              Velocidade: {position.speed}
             </Text>
             <Text color="white" fontSize='sm' ml='40' mt='-6'>
-              última atualização: {data.lastUpdate}
+              última atualização: {vehicle.lastUpdate}
             </Text>
           </VStack>
-          <Text mb={3} color="white" fontSize='md'>
-            Morada: {data.address}
+          <Text mb={3} color="white" fontSize='sm'>
+            Morada: {position.address}
           </Text>
           <Text color="white" fontSize='sm'>
-            Estado: {data.status}{'\n'}
-            Ignição: {data.attributes.ignition}{'\n'}
-            Voltímetro: {data.attributes.voltmeter}
+            Estado: {vehicle.status}{'\n'}
+            Ignição: {position.attributes.ignition}{'\n'}
+            Voltímetro: {position.attributes.power}
           </Text>
         </VStack>
       </Center>

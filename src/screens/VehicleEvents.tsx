@@ -71,6 +71,7 @@ export function VehicleEvents() {
   };
 
   function fetchDailyTrips(vehicle: VehiclesDTO, selectedDayMoment?: moment.Moment | undefined) {
+    setLoading(true);
     const fromMoment = selectedDayMoment === undefined ? moment().startOf('day') : selectedDayMoment.startOf('day');
     const toMoment = fromMoment.clone().add(1, 'day');
     const url = `${constants.API_BASE_URL}/api/reports/events?from=${fromMoment.toISOString()}&to=${toMoment.toISOString()}&deviceId=${vehicle.id}`;
@@ -113,7 +114,6 @@ export function VehicleEvents() {
       </View>
       <VStack>
         <View mt='1' mb={height / 5}>
-
           {loading ? <Loading /> : (
             <FlatList
               data={trips}

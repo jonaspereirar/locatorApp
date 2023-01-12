@@ -69,10 +69,16 @@ export function Map() {
 
   useFocusEffect(
     useCallback(() => {
+      if (webSocket) {
+        webSocket.onopen
+      }
       // Fecha o WebSocket quando a tela atual perde o foco (é escondida)
-      return () => webSocket?.close();
+      return () => {
+        webSocket?.close();
+      }
     }, [webSocket])
   );
+
 
   useEffect(() => {
     // Atualiza o estado deviceModal a cada 30 segundos
@@ -201,7 +207,6 @@ export function Map() {
     }
   };
 
-
   function onButtonTrafficClick() {
     setShowsTraffic(!showsTraffic)
   }
@@ -216,27 +221,6 @@ export function Map() {
     }
     setMapType(newMapType);
   };
-
-  useEffect(() => {
-    if (webSocket) {
-      webSocket.onopen = () => {
-        webSocket.send('WebSocket foi aberto');
-      };
-
-      webSocket.onclose = () => {
-        console.log('WebSocket foi fechado');
-      };
-
-      webSocket.onmessage = (event) => {
-        console.log(event.data);
-        // processar a mensagem aqui
-      };
-
-      return () => {
-        webSocket.close();
-      };
-    }
-  }, [webSocket]);
 
   return (
     <NativeBaseProvider
