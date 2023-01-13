@@ -1,5 +1,5 @@
 import { useNavigation, useRoute } from '@react-navigation/native';
-import MapView, { Marker } from 'react-native-maps';
+import MapView from 'react-native-maps';
 import { Box, Heading, HStack, Text, View, VStack, Pressable, FlatList } from 'native-base'
 
 import { useEffect, useState, useRef } from 'react';

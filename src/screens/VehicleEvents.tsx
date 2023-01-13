@@ -5,7 +5,6 @@ import axios from "axios";
 import moment from "moment";
 import {
   View,
-  Card,
   Box,
   NativeBaseProvider,
   extendTheme,
@@ -17,9 +16,7 @@ import {
   Text,
 } from "native-base";
 import CalendarStrip from "react-native-calendar-strip";
-import Timeline from "../components/timeline";
 import * as constants from "../constants/constants";
-import styles from "./styles";
 import { VehiclesDTO } from "@dtos/vehiclesDTO";
 import { VehicleDetailsEventsDTO } from "@dtos/VehicleDetailsEventsDTO";
 import { Loading } from "@components/Loading";

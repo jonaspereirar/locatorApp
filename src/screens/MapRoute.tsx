@@ -5,7 +5,6 @@ import MapView, { Polyline } from 'react-native-maps';
 
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { Header } from '@components/Header';
-import { Loading } from '@components/Loading';
 
 interface Route {
   latitude: number;

@@ -1,9 +1,7 @@
-import React, { useEffect, useRef, useState } from 'react';
-import MapView, { Polyline } from 'react-native-maps';
+import React, { useEffect, useState } from 'react';
 import {
   View, Text, Card, Box, Button, NativeBaseProvider, extendTheme, v3CompatibleTheme, FlatList, HStack, VStack,
 } from 'native-base';
-import { ActivityIndicator, Dimensions, ViewToken } from "react-native";
 import axios from 'axios';
 import moment, { Moment } from 'moment';
 import CalendarStrip from 'react-native-calendar-strip';
@@ -17,8 +15,6 @@ import { PositionsDTO } from '@dtos/PositionsDTO';
 import { Header } from '@components/Header';
 import { fetchSummaryMapDTO } from '@dtos/fetchSummaryMapDTO';
 import { Loading } from '@components/Loading';
-import { FlatListAnimated } from '../components/FlatListAnimated';
-import { useSharedValue } from 'react-native-reanimated';
 
 interface Route {
   latitude: number;
@@ -40,7 +36,6 @@ export interface NavigationProps {
 }
 
 export function VehicleDetailsTrips() {
-  const { width, height } = Dimensions.get('window')
   const [loading, setLoading] = useState(false);
   const [showMap, setShowMap] = useState(false);
   const [trips, setTrips] = useState<VehicleDetailsTripsDTO[]>([]);
@@ -50,7 +45,6 @@ export function VehicleDetailsTrips() {
   const [messageToDisplay, setMessageToDisplay] = useState<string | undefined>(undefined);
   const [selectedDate, setSelectedDate] = useState(moment());
   const [momentDate, setMomentDate] = useState(moment());
-  const viewableItems = useSharedValue<ViewToken[]>([]);
 
   const navigation = useNavigation<NavigationProps>();
   let totalDistance = 0;

@@ -49,7 +49,7 @@ export const THEME = extendTheme({
   },
   fonts: {
     heading: 'Roboto_700Bold',
-    body: 'Roboto_400Regular',
+    //body: 'Roboto_400Regular',
   },
   fontSizes: {
     xs: 12,
